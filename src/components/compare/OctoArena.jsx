@@ -100,7 +100,22 @@ export function OctoArena() {
             transform: cat.vx > 0 ? 'scaleX(-1)' : 'scaleX(1)'
           }}
         >
-          <MarkGithubIcon size={24} />
+          <div className="relative w-10 h-10 flex items-end justify-center">
+            {/* The actual full-body Octocat image */}
+            <img 
+              src="https://github.githubassets.com/images/modules/logos_page/Octocat.png" 
+              alt="Octocat"
+              className="w-full h-full object-contain"
+              style={{
+                filter: `drop-shadow(0px 0px 4px ${cat.color}) drop-shadow(0px 0px 8px ${cat.color})`
+              }}
+            />
+            {/* Colored indicator dot to make the repo color very obvious */}
+            <div 
+              className="absolute -top-1 w-2 h-2 rounded-full shadow-sm"
+              style={{ backgroundColor: cat.color }}
+            />
+          </div>
           {cat.state === 'fighting' && (
             <span className="absolute -top-4 -right-2 text-xs animate-ping">✨</span>
           )}
