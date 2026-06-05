@@ -29,7 +29,7 @@ export function Header() {
     <header className="bg-canvas-subtle border-b border-border-muted py-4 px-6 flex items-center justify-between">
       <div className="flex items-center gap-3">
         <MarkGithubIcon size={32} className="text-fg-default" />
-        <h1 className="text-xl font-semibold text-fg-default tracking-tight">RepoLens</h1>
+        <h1 className="text-xl font-semibold text-fg-default tracking-tight">OctoClash</h1>
       </div>
       
       <div className="flex items-center gap-4">

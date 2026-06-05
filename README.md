@@ -1,8 +1,8 @@
-# 🐙 RepoLens
+# 🐙 OctoClash
 
-**RepoLens** is a modern, lightweight, fully client-side React application that allows developers to perform deep comparative analysis of multiple GitHub repositories simultaneously. 
+**OctoClash** is a modern, lightweight, fully client-side React application that allows developers to perform deep comparative analysis of multiple GitHub repositories simultaneously. 
 
-Tired of opening 10 different tabs to compare commit dates, stargazers, forks, and language distributions? RepoLens solves this by presenting all the crucial metrics in one unified, pixel-perfect dashboard that faithfully replicates GitHub's official Primer Design System.
+Tired of opening 10 different tabs to compare commit dates, stargazers, forks, and language distributions? OctoClash solves this by presenting all the crucial metrics in one unified, pixel-perfect dashboard that faithfully replicates GitHub's official Primer Design System.
 
 ## ✨ Features
 
@@ -28,8 +28,8 @@ You will need [Node.js](https://nodejs.org/) installed to run this project local
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/repolens.git
-   cd repolens
+   git clone https://github.com/your-username/OctoClash.git
+   cd OctoClash
    ```
 
 2. **Install dependencies:**

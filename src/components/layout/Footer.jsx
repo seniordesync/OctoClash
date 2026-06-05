@@ -17,7 +17,7 @@ export function Footer() {
     <footer className="border-t border-border-muted mt-12 py-8 bg-canvas-default text-sm text-fg-muted">
       <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <span>&copy; {new Date().getFullYear()} RepoLens.</span>
+          <span>&copy; {new Date().getFullYear()} OctoClash.</span>
           <span>Open Source No-Backend Tool.</span>
         </div>
 
@@ -25,7 +25,7 @@ export function Footer() {
           <label className="flex items-center gap-2 font-medium">
             <KeyIcon size={16} />
             GitHub Personal Access Token
-            <a href="https://github.com/settings/tokens/new?description=RepoLens" target="_blank" rel="noreferrer" className="text-accent-fg hover:underline text-xs">(Get one)</a>
+            <a href="https://github.com/settings/tokens/new?description=OctoClash" target="_blank" rel="noreferrer" className="text-accent-fg hover:underline text-xs">(Get one)</a>
             <Tooltip text="Used to bypass API limits. Stored safely in your browser's localStorage." />
           </label>
           <Input 

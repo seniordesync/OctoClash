@@ -109,3 +109,14 @@
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-fg-muted);
 }
+
+@keyframes clash {
+  0% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-4px) rotate(-15deg); }
+  50% { transform: translateX(4px) rotate(15deg); }
+  75% { transform: translateX(-4px) rotate(-15deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
+.animate-clash {
+  animation: clash 0.2s ease-in-out infinite;
+}

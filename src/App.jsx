@@ -5,6 +5,7 @@ import { RepoInput } from './components/compare/RepoInput';
 import { ComparisonTable } from './components/compare/ComparisonTable';
 import { Charts } from './components/compare/Charts';
 import { ReadmeModal } from './components/compare/ReadmeModal';
+import { OctoArena } from './components/compare/OctoArena';
 import { Alert } from './components/ui/Alert';
 import { MonaOctocat } from './assets/MonaOctocat';
 import { useGitHubApi } from './hooks/useGitHubApi';
@@ -144,6 +145,7 @@ function App() {
         )}
       </main>
 
+      <OctoArena />
       <Footer />
       <ReadmeModal />
     </div>
