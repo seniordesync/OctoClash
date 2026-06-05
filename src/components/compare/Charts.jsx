@@ -74,6 +74,7 @@ export function Charts({ reposData }) {
               <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} />
               <YAxis stroke="var(--color-fg-muted)" fontSize={12} />
               <RechartsTooltip 
+                cursor={{ fill: 'transparent' }}
                 contentStyle={{ backgroundColor: 'var(--color-canvas-default)', borderColor: 'var(--color-border-default)', color: 'var(--color-fg-default)' }}
               />
               <Legend wrapperStyle={{ fontSize: 12, color: 'var(--color-fg-default)' }} />
