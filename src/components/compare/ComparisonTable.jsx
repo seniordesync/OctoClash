@@ -14,7 +14,7 @@ export function ComparisonTable({ reposData }) {
   return (
     <div className="overflow-x-auto border border-border-default rounded-md bg-canvas-default shadow-sm">
       <table className="w-full text-sm text-left">
-        <thead className="bg-canvas-subtle text-fg-muted border-b border-border-default whitespace-nowrap">
+        <thead className="bg-canvas-subtle text-fg-muted border-b border-border-default">
           <tr>
             <th className="px-4 py-3 font-semibold sticky left-0 bg-canvas-subtle z-10 border-r border-border-default">Repository</th>
             <th className="px-4 py-3 font-semibold"><BookIcon className="mr-1 inline" />README</th>
@@ -32,7 +32,7 @@ export function ComparisonTable({ reposData }) {
         </thead>
         <tbody>
           {reposData.map(({ info, contributors, avgIssueTime }) => (
-            <tr key={info.full_name} className="border-b border-border-muted hover:bg-canvas-subtle transition-colors whitespace-nowrap">
+            <tr key={info.full_name} className="border-b border-border-muted hover:bg-canvas-subtle transition-colors">
               <td className="px-4 py-3 font-semibold text-fg-accent sticky left-0 bg-canvas-default group-hover:bg-canvas-subtle z-10 border-r border-border-muted">
                 <a href={info.html_url} target="_blank" rel="noreferrer" className="hover:underline">
                   {info.full_name}
