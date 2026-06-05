@@ -25,6 +25,7 @@ export function Footer() {
           <label className="flex items-center gap-2 font-medium">
             <KeyIcon size={16} />
             GitHub Personal Access Token
+            <a href="https://github.com/settings/tokens/new?description=RepoLens" target="_blank" rel="noreferrer" className="text-accent-fg hover:underline text-xs">(Get one)</a>
             <Tooltip text="Used to bypass API limits. Stored safely in your browser's localStorage." />
           </label>
           <Input 
