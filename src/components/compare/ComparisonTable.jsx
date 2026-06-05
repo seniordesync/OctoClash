@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatBytes } from '../../utils/helpers';
 import { format } from 'date-fns';
-import { StarIcon, RepoForkedIcon, EyeIcon, IssueOpenedIcon, LawIcon, BookIcon, PeopleIcon } from '@primer/octicons-react';
+import { StarIcon, RepoForkedIcon, EyeIcon, IssueOpenedIcon, LawIcon, BookIcon, PeopleIcon, FileIcon } from '@primer/octicons-react';
 import { ContributorsList } from './ContributorsList';
 import { useAppStore } from '../../store/appStore';
 import { Tooltip } from '../ui/Tooltip';
@@ -44,7 +44,7 @@ export function ComparisonTable({ reposData }) {
                     onClick={() => setPreviewRepo(info.full_name)}
                     className="text-fg-muted hover:text-accent-fg p-1 rounded-md transition-colors"
                   >
-                    <BookIcon size={16} />
+                    <FileIcon size={16} />
                   </button>
                 </Tooltip>
               </td>
