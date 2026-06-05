@@ -25,7 +25,6 @@ export function useGitHubApi() {
       throw new Error('notFound');
     }
     if (!response.ok) {
-       // Could be 202 for stats, we will just handle it as empty for now to avoid hanging
        if (response.status === 202) return null; 
        throw new Error(`Error: ${response.status}`);
     }
@@ -40,21 +39,41 @@ export function useGitHubApi() {
     setLoading(true);
     setError(null);
     try {
-      // Fetch main repo info
-      const repoInfo = await fetchWithToken(`/repos/${ownerRepo}`);
-      
-      // Fetch languages
-      const languages = await fetchWithToken(`/repos/${ownerRepo}/languages`);
-      
-      // Fetch commit activity (last year, weekly)
-      let commitActivity = await fetchWithToken(`/repos/${ownerRepo}/stats/commit_activity`);
-      // If 202, it means GitHub is computing it. We return empty array to prevent failure.
-      if (!commitActivity) commitActivity = [];
+      // Use Promise.all to fetch everything concurrently for better performance
+      const [repoInfo, languages, commitActivityRaw, contributors, issues] = await Promise.all([
+        fetchWithToken(`/repos/${ownerRepo}`),
+        fetchWithToken(`/repos/${ownerRepo}/languages`).catch(() => ({})),
+        fetchWithToken(`/repos/${ownerRepo}/stats/commit_activity`).catch(() => []),
+        fetchWithToken(`/repos/${ownerRepo}/contributors?per_page=5`).catch(() => []),
+        fetchWithToken(`/repos/${ownerRepo}/issues?state=closed&per_page=30`).catch(() => [])
+      ]);
+
+      const commitActivity = commitActivityRaw || [];
+
+      // Calculate avg issue resolution time
+      let avgIssueTime = null;
+      if (issues && issues.length > 0) {
+        // Filter out PRs, since /issues returns PRs too
+        const actualIssues = issues.filter(i => !i.pull_request);
+        if (actualIssues.length > 0) {
+          const totalMs = actualIssues.reduce((acc, issue) => {
+            const created = new Date(issue.created_at).getTime();
+            const closed = new Date(issue.closed_at).getTime();
+            return acc + (closed - created);
+          }, 0);
+          const avgMs = totalMs / actualIssues.length;
+          // convert to days
+          const avgDays = Math.round(avgMs / (1000 * 60 * 60 * 24));
+          avgIssueTime = avgDays === 0 ? '< 1 day' : `${avgDays} days`;
+        }
+      }
 
       const result = {
         info: repoInfo,
         languages: languages || {},
         commitActivity: commitActivity,
+        contributors: contributors || [],
+        avgIssueTime
       };
 
       cache.set(ownerRepo, result);
@@ -67,5 +86,21 @@ export function useGitHubApi() {
     }
   }, [token]);
 
-  return { fetchRepoData, loading, error, setError };
+  const fetchReadmeHtml = useCallback(async (ownerRepo) => {
+    try {
+      const headers = {
+        'Accept': 'application/vnd.github.html',
+      };
+      if (token) {
+        headers['Authorization'] = `token ${token}`;
+      }
+      const response = await fetch(`https://api.github.com/repos/${ownerRepo}/readme`, { headers });
+      if (!response.ok) throw new Error('Failed to load README');
+      return await response.text();
+    } catch (err) {
+      return "<div class='p-4 text-center text-fg-muted'>Failed to load README or repository has no README.</div>";
+    }
+  }, [token]);
+
+  return { fetchRepoData, fetchReadmeHtml, loading, error, setError };
 }

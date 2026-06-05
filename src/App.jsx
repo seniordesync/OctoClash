@@ -4,6 +4,7 @@ import { Footer } from './components/layout/Footer';
 import { RepoInput } from './components/compare/RepoInput';
 import { ComparisonTable } from './components/compare/ComparisonTable';
 import { Charts } from './components/compare/Charts';
+import { ReadmeModal } from './components/compare/ReadmeModal';
 import { Alert } from './components/ui/Alert';
 import { MonaOctocat } from './assets/MonaOctocat';
 import { useGitHubApi } from './hooks/useGitHubApi';
@@ -144,6 +145,7 @@ function App() {
       </main>
 
       <Footer />
+      <ReadmeModal />
     </div>
   );
 }

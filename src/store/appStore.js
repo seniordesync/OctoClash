@@ -34,6 +34,9 @@ export const useAppStore = create((set) => ({
     repos: state.repos.filter(r => r !== repo)
   })),
 
+  previewRepo: null,
+  setPreviewRepo: (previewRepo) => set({ previewRepo }),
+
   infiniteMode: false,
   setInfiniteMode: (infiniteMode) => set({ infiniteMode }),
 }))
