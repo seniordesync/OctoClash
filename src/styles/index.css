@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-canvas-default: #ffffff;
+    --color-canvas-subtle: #f6f8fa;
+    --color-canvas-inset: #f6f8fa;
+    --color-border-default: #d0d7de;
+    --color-border-muted: #d0d7de; /* GitHub uses rgba(27,31,36,0.15) often but solid works well for tailwind */
+    --color-fg-default: #24292f;
+    --color-fg-muted: #57606a;
+    --color-fg-accent: #0969da;
+    --color-fg-danger: #cf222e;
+    --color-fg-success: #1a7f37;
+    --color-btn-bg: #f6f8fa;
+    --color-btn-border: rgba(27, 31, 36, 0.15);
+    --color-btn-hover-bg: #f3f4f6;
+    --color-btn-primary-bg: #2da44e;
+    --color-btn-primary-hover-bg: #2c974b;
+  }
+
+  .dark {
+    --color-canvas-default: #0d1117;
+    --color-canvas-subtle: #161b22;
+    --color-canvas-inset: #010409;
+    --color-border-default: #30363d;
+    --color-border-muted: #21262d;
+    --color-fg-default: #c9d1d9;
+    --color-fg-muted: #8b949e;
+    --color-fg-accent: #58a6ff;
+    --color-fg-danger: #f85149;
+    --color-fg-success: #3fb950;
+    --color-btn-bg: #21262d;
+    --color-btn-border: rgba(240, 246, 252, 0.1);
+    --color-btn-hover-bg: #30363d;
+    --color-btn-primary-bg: #238636;
+    --color-btn-primary-hover-bg: #2ea043;
+  }
+
+  body {
+    @apply bg-canvas-default text-fg-default font-sans antialiased;
+  }
+}
+
+/* Animations for Mascot */
+@keyframes eyeMove {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+@keyframes floatMascot {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.mascot-eye {
+  animation: eyeMove 3s ease-in-out infinite;
+}
+
+.mascot-float {
+  animation: floatMascot 4s ease-in-out infinite;
+}
