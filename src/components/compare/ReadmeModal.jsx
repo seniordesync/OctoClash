@@ -25,7 +25,7 @@ export function ReadmeModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80" onClick={() => setPreviewRepo(null)}>
       <div 
-        className="bg-canvas-default border border-border-default rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col"
+        className="bg-canvas-default border border-border-default rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         

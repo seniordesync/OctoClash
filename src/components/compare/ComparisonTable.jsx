@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatBytes } from '../../utils/helpers';
 import { format } from 'date-fns';
-import { StarIcon, RepoForkedIcon, EyeIcon, IssueOpenedIcon, LawIcon, BookIcon, PeopleIcon, FileIcon } from '@primer/octicons-react';
+import { StarIcon, RepoForkedIcon, EyeIcon, IssueOpenedIcon, LawIcon, BookIcon, PeopleIcon, RepoIcon } from '@primer/octicons-react';
 import { ContributorsList } from './ContributorsList';
 import { useAppStore } from '../../store/appStore';
 import { Tooltip } from '../ui/Tooltip';
@@ -17,7 +17,7 @@ export function ComparisonTable({ reposData }) {
         <thead className="bg-canvas-subtle text-fg-muted border-b border-border-default">
           <tr>
             <th className="px-4 py-3 font-semibold sticky left-0 bg-canvas-subtle z-10 border-r border-border-default">Repository</th>
-            <th className="px-4 py-3 font-semibold"><BookIcon className="mr-1 inline" />README</th>
+            <th className="px-4 py-3 font-semibold"><RepoIcon className="mr-1 inline" />README</th>
             <th className="px-4 py-3 font-semibold"><PeopleIcon className="mr-1 inline" />Top Contributors</th>
             <th className="px-4 py-3 font-semibold">Created</th>
             <th className="px-4 py-3 font-semibold">Last Commit</th>
@@ -44,7 +44,7 @@ export function ComparisonTable({ reposData }) {
                     onClick={() => setPreviewRepo(info.full_name)}
                     className="text-fg-muted hover:text-accent-fg p-1 rounded-md transition-colors"
                   >
-                    <FileIcon size={16} />
+                    <BookIcon size={16} />
                   </button>
                 </Tooltip>
               </td>
