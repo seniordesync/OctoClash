@@ -5,9 +5,7 @@ export function MonaOctocat({ className = '' }) {
   // We use the official MarkGithubIcon from Primer and wrap it in an animation
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <div className="animate-pulse">
-        <MarkGithubIcon size={64} className="text-fg-muted" />
-      </div>
+      <MarkGithubIcon size={64} className="text-fg-muted" />
     </div>
   );
 }
