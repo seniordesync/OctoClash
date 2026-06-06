@@ -44,27 +44,25 @@ export function ComparisonTable({ reposData }) {
         <tbody>
           {reposData.map(({ info, contributors, avgIssueTime, commitsLastYear }, index) => (
             <tr key={info.full_name} className="group border-b border-border-muted hover:bg-canvas-subtle transition-colors relative">
-              <td className="px-1 py-2 text-center whitespace-nowrap border-r border-border-muted sticky left-0 bg-canvas-default group-hover:bg-canvas-subtle z-10">
-                <div className="flex items-center justify-center gap-1">
-                  <span className="text-xs font-semibold text-fg-muted w-3 text-right">{index + 1}</span>
-                  <div className="flex flex-col">
-                    <button 
-                      onClick={() => moveUp(index)}
-                      disabled={index === 0}
-                      className={`p-0.5 rounded ${index === 0 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
-                      aria-label="Move up"
-                    >
-                      <ChevronUpIcon size={16} />
-                    </button>
-                    <button 
-                      onClick={() => moveDown(index)}
-                      disabled={index === reposData.length - 1}
-                      className={`p-0.5 rounded ${index === reposData.length - 1 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
-                      aria-label="Move down"
-                    >
-                      <ChevronDownIcon size={16} />
-                    </button>
-                  </div>
+              <td className="px-1 py-1 text-center whitespace-nowrap border-r border-border-muted sticky left-0 bg-canvas-default group-hover:bg-canvas-subtle z-10">
+                <div className="flex flex-col items-center justify-center">
+                  <button 
+                    onClick={() => moveUp(index)}
+                    disabled={index === 0}
+                    className={`p-0 rounded ${index === 0 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
+                    aria-label="Move up"
+                  >
+                    <ChevronUpIcon size={16} />
+                  </button>
+                  <span className="text-xs font-semibold text-fg-muted leading-none my-0.5">{index + 1}</span>
+                  <button 
+                    onClick={() => moveDown(index)}
+                    disabled={index === reposData.length - 1}
+                    className={`p-0 rounded ${index === reposData.length - 1 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
+                    aria-label="Move down"
+                  >
+                    <ChevronDownIcon size={16} />
+                  </button>
                 </div>
               </td>
               <td className="px-4 py-3 font-semibold text-fg-accent sticky left-14 bg-canvas-default group-hover:bg-canvas-subtle z-10 border-r border-border-muted">
