@@ -79,20 +79,6 @@
 .markdown-body img { max-width: 100%; box-sizing: content-box; background-color: var(--color-canvas-default); }
 
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border-default);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-fg-muted);
-}
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 14px;

@@ -32,7 +32,7 @@ export function ComparisonTable({ reposData }) {
         </thead>
         <tbody>
           {reposData.map(({ info, contributors, avgIssueTime }) => (
-            <tr key={info.full_name} className="border-b border-border-muted hover:bg-canvas-subtle transition-colors">
+            <tr key={info.full_name} className="group border-b border-border-muted hover:bg-canvas-subtle transition-colors">
               <td className="px-4 py-3 font-semibold text-fg-accent sticky left-0 bg-canvas-default group-hover:bg-canvas-subtle z-10 border-r border-border-muted">
                 <a href={info.html_url} target="_blank" rel="noreferrer" className="hover:underline">
                   {info.full_name}
@@ -52,7 +52,7 @@ export function ComparisonTable({ reposData }) {
                 <ContributorsList contributors={contributors} />
               </td>
               <td className="px-4 py-3 text-fg-default">{format(new Date(info.created_at), 'MMM d, yyyy')}</td>
-              <td className="px-4 py-3 text-fg-default">{format(new Date(info.updated_at), 'MMM d, yyyy')}</td>
+              <td className="px-4 py-3 text-fg-default">{format(new Date(info.pushed_at || info.updated_at), 'MMM d, yyyy')}</td>
               <td className="px-4 py-3 text-fg-default">{info.stargazers_count.toLocaleString()}</td>
               <td className="px-4 py-3 text-fg-default">{info.forks_count.toLocaleString()}</td>
               <td className="px-4 py-3 text-fg-default">{info.subscribers_count?.toLocaleString() || info.watchers_count.toLocaleString()}</td>

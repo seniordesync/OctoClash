@@ -32,8 +32,9 @@ export function useGitHubApi() {
   };
 
   const fetchRepoData = useCallback(async (ownerRepo) => {
-    if (cache.has(ownerRepo)) {
-      return cache.get(ownerRepo);
+    const cacheKey = `${ownerRepo}-${token || 'no-token'}`;
+    if (cache.has(cacheKey)) {
+      return cache.get(cacheKey);
     }
 
     setLoading(true);
@@ -76,7 +77,7 @@ export function useGitHubApi() {
         avgIssueTime
       };
 
-      cache.set(ownerRepo, result);
+      cache.set(cacheKey, result);
       setLoading(false);
       return result;
     } catch (err) {

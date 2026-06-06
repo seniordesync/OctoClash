@@ -1,12 +1,30 @@
 import React from 'react';
-import { AlertIcon, XCircleIcon } from '@primer/octicons-react';
+import { AlertIcon, XCircleIcon, CheckCircleIcon, InfoIcon } from '@primer/octicons-react';
 
 export function Alert({ message, type = 'error', onClose }) {
   if (!message) return null;
 
-  const bgStyles = type === 'error' ? 'bg-canvas-subtle border-border-default' : 'bg-canvas-subtle border-border-default';
-  const textStyles = type === 'error' ? 'text-fg-danger' : 'text-fg-default';
-  const Icon = type === 'error' ? XCircleIcon : AlertIcon;
+  let bgStyles = 'bg-canvas-subtle border-border-default';
+  let textStyles = 'text-fg-default';
+  let Icon = AlertIcon;
+
+  if (type === 'error') {
+    bgStyles = 'bg-[var(--color-fg-danger)] bg-opacity-10 border-[var(--color-fg-danger)] border-opacity-20';
+    textStyles = 'text-fg-danger';
+    Icon = XCircleIcon;
+  } else if (type === 'success') {
+    bgStyles = 'bg-[var(--color-fg-success)] bg-opacity-10 border-[var(--color-fg-success)] border-opacity-20';
+    textStyles = 'text-fg-success';
+    Icon = CheckCircleIcon;
+  } else if (type === 'info') {
+    bgStyles = 'bg-[var(--color-fg-accent)] bg-opacity-10 border-[var(--color-fg-accent)] border-opacity-20';
+    textStyles = 'text-fg-accent';
+    Icon = InfoIcon;
+  } else if (type === 'warning') {
+    bgStyles = 'bg-[#d4a72c] bg-opacity-10 border-[#d4a72c] border-opacity-20';
+    textStyles = 'text-[#d4a72c]';
+    Icon = AlertIcon;
+  }
 
   return (
     <div className={`flex items-start gap-3 p-4 border rounded-md ${bgStyles}`}>
