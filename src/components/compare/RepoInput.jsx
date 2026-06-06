@@ -210,7 +210,7 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
         <Button type="submit" variant="primary">
           Add
         </Button>
-        <Tooltip text="Enter repository name in 'owner/repo' format. Max 10 by default." />
+        <Tooltip text="Enter repository name in 'owner/repo' format to compare their statistics, commit activity, and languages." />
       </form>
 
       {/* Infinite Mode Toggle */}
@@ -223,12 +223,12 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
             className="rounded border-border-default bg-canvas-default text-fg-accent focus:ring-fg-accent"
           />
           Enable infinite comparison
-          <Tooltip text="Bypass the 10 repos limit." />
+          <Tooltip text="Experimental feature: Bypass the default 10 repos limit. No guarantees on stability, performance, or correct visual rendering." />
         </label>
         {infiniteMode && (
           <div className="flex items-center gap-2 text-xs text-fg-danger bg-canvas-subtle p-2 rounded border border-border-default inline-block max-w-max">
             <ShieldLockIcon size={14} />
-            Warning: Comparing more than 10 repos can quickly exhaust GitHub API limits. Use a Personal Access Token.
+            Warning: Comparing an unlimited number of repositories is an experimental feature. It may break UI layouts and will quickly exhaust GitHub API limits without a token.
           </div>
         )}
       </div>

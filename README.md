@@ -1,54 +1,78 @@
-# 🐙 OctoClash
+<div align="center">
+  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" width="100" />
+  <h1 align="center">🐙 OctoClash</h1>
+  <p align="center">
+    <strong>The Ultimate GitHub Repository Comparison Dashboard</strong>
+    <br />
+    <br />
+    <a href="https://seniordesync.github.io/OctoClash/"><strong>🚀 View Live Demo</strong></a>
+    <br />
+    <br />
+  </p>
+</div>
 
-**OctoClash** is a modern, lightweight, fully client-side React application that allows developers to perform deep comparative analysis of multiple GitHub repositories simultaneously. 
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18.2-blue.svg?style=for-the-badge&logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC.svg?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Vite-5.0-646CFF.svg?style=for-the-badge&logo=vite" alt="Vite" />
+  <img src="https://img.shields.io/badge/100%25_Client_Side-Success-success.svg?style=for-the-badge" alt="100% Client Side" />
+</p>
 
-Tired of opening 10 different tabs to compare commit dates, stargazers, forks, and language distributions? OctoClash solves this by presenting all the crucial metrics in one unified, pixel-perfect dashboard that faithfully replicates GitHub's official Primer Design System.
+---
 
-## ✨ Features
+## 🎯 What is OctoClash?
 
-- **Multi-Repo Comparison:** Compare up to 10 repositories by default (with an optional infinite mode).
-- **Pixel-Perfect GitHub UI:** Built with Tailwind CSS, strictly following GitHub's Primer UI guidelines.
-- **Dynamic Theming:** Seamlessly switch between System, Light, and Dark (GitHub Dimmed) modes.
-- **No Backend Required:** 100% Client-Side. No databases, no paid APIs. Ready to be deployed as a static site.
-- **Sharable Links:** Your selected repositories are synced to the URL, making it easy to share comparisons with your team.
-- **Visual Analytics:** Interactive charts for Commit Activity (last 3 months) and Language Distribution powered by Recharts.
-- **API Rate Limit Bypass:** Includes a secure local input for your GitHub Personal Access Token (PAT) to bypass unauthenticated rate limits.
+**OctoClash** is a modern, ultra-fast, and deeply analytical React application that allows developers to perform real-time comparative analysis of multiple GitHub repositories simultaneously.
 
-## 🚀 Tech Stack
+Tired of opening 10 different tabs to compare commit dates, stargazers, forks, and language distributions? OctoClash solves this by presenting all crucial metrics in one unified, pixel-perfect dashboard that faithfully replicates GitHub's official Primer Design System.
 
-- **Framework:** [React](https://reactjs.org/) + [Vite](https://vitejs.dev/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **State Management:** [Zustand](https://github.com/pmndrs/zustand)
-- **Icons:** [@primer/octicons-react](https://primer.style/octicons/)
-- **Charts:** [Recharts](https://recharts.org/)
+<br />
 
-## 🛠️ Quick Start
+## ✨ Core Features
 
-You will need [Node.js](https://nodejs.org/) installed to run this project locally.
+### 🔍 Deep Analytical Comparison
+- **Multi-Repo Dashboard:** Compare repositories side-by-side. View detailed stats including stars, forks, issues, recent activity, and repository size.
+- **Smart Autocomplete:** Live-search GitHub repositories with instant results, keyboard navigation, and immediate star-count feedback.
+- **Drag & Drop Organization:** Beautifully arrange your compared repositories using a fluid, physics-based drag-and-drop interface.
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/OctoClash.git
-   cd OctoClash
-   ```
+### 📊 Visual Data & Charts
+- **Star History:** Track and compare the historical growth of repositories with sampled line charts.
+- **Commit Activity:** See the pulse of a project with 3-month commit activity graphs.
+- **Language Distribution:** Visual bar charts comparing the tech stacks and byte-sizes of the selected codebases.
+- **Top Contributors:** Instantly view the most active developers driving each project forward.
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### 🎨 Pixel-Perfect GitHub UX
+- **Primer UI:** Designed strictly following GitHub's official Primer Design System for a seamless, native feel.
+- **Dynamic Theming:** Instant switching between System, Light, and the sleek GitHub Dark Dimmed modes.
 
-3. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
-   Open `http://localhost:5173` in your browser.
+### ⚡ Performance & Sharing
+- **100% Client-Side:** No backend, no databases, no hidden telemetry.
+- **Smart Caching:** Local memory caching ensures you never hit GitHub API rate limits unnecessarily.
+- **Shareable Links:** Your exact comparison state is synced to the URL. Copy the link and share it instantly with your team.
 
-## 🌐 Deployment
+<br />
 
-This project includes a pre-configured GitHub Actions workflow (`.github/workflows/deploy.yml`) for seamless deployment to **GitHub Pages**. 
+## 🛠️ Technology Stack
 
-Simply push the code to your `main` branch, ensure GitHub Pages is set to use "GitHub Actions" in your repository settings, and the site will be built and published automatically!
+We believe in a modern, lightweight, and incredibly fast stack:
 
-## 📜 License
+*   **Core:** React 18 & Vite
+*   **Styling:** Tailwind CSS (with bespoke GitHub Primer variables)
+*   **State Management:** Zustand (with URL and localStorage persistence)
+*   **Data Visualization:** Recharts
+*   **Interactions:** @dnd-kit (for accessible drag and drop)
+*   **Icons:** @primer/octicons-react
 
-This project is licensed under the [MIT License](LICENSE).
+<br />
+
+## 🔐 Privacy & API Limits
+
+OctoClash communicates directly with the public GitHub REST API from your browser. We do not track, store, or proxy any of your requests. 
+
+For heavy usage, you can optionally provide a **Personal Access Token (PAT)** via the secure settings menu. This token is stored exclusively in your browser's local storage and is never transmitted anywhere except directly to `api.github.com`.
+
+---
+
+<div align="center">
+  <p>Built with ❤️ for the open-source community.</p>
+</div>
