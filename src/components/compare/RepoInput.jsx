@@ -84,4 +84,4 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
       </div>
     </div>
   );
-}
+});
