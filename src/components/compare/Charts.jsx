@@ -129,16 +129,16 @@ export const Charts = memo(function Charts({ reposData }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-canvas-default border border-border-default rounded-md p-4 shadow-sm">
           <h3 className="text-fg-default font-semibold mb-4">Commits (Last 3 Months)</h3>
-          <div className="h-80">
+          <div className="h-[340px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={commitData}>
+              <LineChart data={commitData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-muted)" />
-                <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} />
+                <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} dy={10} />
                 <YAxis stroke="var(--color-fg-muted)" fontSize={12} />
                 <RechartsTooltip 
                   contentStyle={{ backgroundColor: 'var(--color-canvas-default)', borderColor: 'var(--color-border-default)', color: 'var(--color-fg-default)' }}
                 />
-                <Legend wrapperStyle={{ fontSize: 12, color: 'var(--color-fg-default)' }} />
+                <Legend wrapperStyle={{ fontSize: 12, color: 'var(--color-fg-default)', paddingTop: '20px' }} />
                 {reposData.map((repo, idx) => (
                   <Line 
                     key={repo.info.full_name} 
@@ -157,17 +157,17 @@ export const Charts = memo(function Charts({ reposData }) {
 
         <div className="bg-canvas-default border border-border-default rounded-md p-4 shadow-sm">
           <h3 className="text-fg-default font-semibold mb-4">Languages (Bytes)</h3>
-          <div className="h-80">
+          <div className="h-[340px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={languageData}>
+              <BarChart data={languageData} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-muted)" />
-                <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} />
+                <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} dy={10} />
                 <YAxis stroke="var(--color-fg-muted)" fontSize={12} />
                 <RechartsTooltip 
                   cursor={false}
                   contentStyle={{ backgroundColor: 'var(--color-canvas-default)', borderColor: 'var(--color-border-default)', color: 'var(--color-fg-default)' }}
                 />
-                <Legend wrapperStyle={{ fontSize: 12, color: 'var(--color-fg-default)' }} />
+                <Legend wrapperStyle={{ fontSize: 12, color: 'var(--color-fg-default)', paddingTop: '20px' }} />
                 {reposData.map((repo, idx) => (
                   <Bar 
                     key={repo.info.full_name} 
@@ -186,17 +186,17 @@ export const Charts = memo(function Charts({ reposData }) {
             Star History (Sampled)
             {loadingStars && <span className="text-xs text-fg-muted font-normal animate-pulse">Loading...</span>}
           </h3>
-          <div className="h-96">
+          <div className="h-[400px]">
             {starData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={starData}>
+                <LineChart data={starData} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-muted)" />
-                  <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} />
+                  <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} dy={10} />
                   <YAxis stroke="var(--color-fg-muted)" fontSize={12} />
                   <RechartsTooltip 
                     contentStyle={{ backgroundColor: 'var(--color-canvas-default)', borderColor: 'var(--color-border-default)', color: 'var(--color-fg-default)' }}
                   />
-                  <Legend wrapperStyle={{ fontSize: 12, color: 'var(--color-fg-default)' }} />
+                  <Legend wrapperStyle={{ fontSize: 12, color: 'var(--color-fg-default)', paddingTop: '20px' }} />
                   {reposData.map((repo, idx) => (
                     <Line 
                       key={repo.info.full_name} 
@@ -224,7 +224,7 @@ export const Charts = memo(function Charts({ reposData }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {reposData.map((repo) => (
             <div key={repo.info.full_name} className="flex flex-col gap-3 p-4 border border-border-muted rounded-md bg-canvas-subtle hover:bg-canvas-default transition-colors">
-              <a href={repo.info.html_url} target="_blank" rel="noreferrer" className="text-fg-accent font-semibold hover:underline text-sm truncate">
+              <a href={repo.info.html_url} target="_blank" rel="noreferrer" className="block text-fg-accent font-semibold hover:underline text-sm truncate">
                 {repo.info.full_name}
               </a>
               <ContributorsList contributors={repo.contributors} />
