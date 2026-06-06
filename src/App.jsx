@@ -113,7 +113,7 @@ function App() {
 
         {!loading && reposData.length > 0 && (
           <div className="mt-8" id="compare-container">
-            <div className="border-b border-border-default mb-6">
+            <div className="border-b border-border-default mb-6" data-html2canvas-ignore="true">
               <nav className="-mb-px flex space-x-6" aria-label="Tabs">
                 <button
                   onClick={() => setActiveTab('table')}

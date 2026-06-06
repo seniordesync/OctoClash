@@ -25,8 +25,10 @@ export const Charts = memo(function Charts({ reposData }) {
 
       const combined = [];
       const datesSet = new Set();
+      const todayStr = new Date().toISOString().split('T')[0];
       
       allHistories.forEach((history) => {
+        datesSet.add(todayStr); // Always ensure today is in the set
         history.forEach(point => {
            if (point.date) datesSet.add(point.date.split('T')[0]);
         });
@@ -37,8 +39,9 @@ export const Charts = memo(function Charts({ reposData }) {
       sortedDates.forEach(dateStr => {
          const row = { name: format(new Date(dateStr), 'MMM yyyy'), _rawDate: dateStr };
          allHistories.forEach((history, idx) => {
-            const repoName = reposData[idx].info.full_name;
+            const repoInfo = reposData[idx].info;
             let starsAtDate = 0;
+            
             for (let point of history) {
               if (!point.date) continue;
               const pointDate = point.date.split('T')[0];
@@ -46,7 +49,12 @@ export const Charts = memo(function Charts({ reposData }) {
                 starsAtDate = Math.max(starsAtDate, point.stars);
               }
             }
-            row[repoName] = starsAtDate;
+            
+            if (dateStr === todayStr) {
+               starsAtDate = Math.max(starsAtDate, repoInfo.stargazers_count);
+            }
+            
+            row[repoInfo.full_name] = starsAtDate;
          });
          combined.push(row);
       });
@@ -204,7 +212,7 @@ export const Charts = memo(function Charts({ reposData }) {
               </ResponsiveContainer>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-fg-muted text-sm">
-                Fetching historical stars...
+                {loadingStars ? 'Fetching historical stars...' : 'Not enough data to display star history.'}
               </div>
             )}
           </div>

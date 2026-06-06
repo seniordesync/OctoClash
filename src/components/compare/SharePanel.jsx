@@ -42,7 +42,7 @@ export function SharePanel({ targetId = 'compare-container' }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-4 py-6 border-t border-border-muted mt-8">
+    <div data-html2canvas-ignore="true" className="flex flex-wrap items-center gap-4 py-6 border-t border-border-muted mt-8">
       <span className="text-sm font-semibold text-fg-default">Share these results:</span>
       <div className="flex items-center gap-3">
         <Button 
