@@ -5,7 +5,7 @@
     <strong>The Ultimate GitHub Repository Comparison Dashboard</strong>
     <br />
     <br />
-    <a href="https://seniordesync.github.io/OctoClash/"><strong>🚀 View Live Demo</strong></a>
+    <a href="https://seniordesync.github.io/OctoClash/"><strong>🚀 View GitHub Pages</strong></a>
     <br />
     <br />
   </p>

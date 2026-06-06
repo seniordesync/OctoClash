@@ -173,10 +173,6 @@ export function useGitHubApi() {
   }, [token]);
 
   const fetchReadmeHtml = useCallback(async (ownerRepo) => {
-    const cacheKey = `readme_${ownerRepo}`;
-    const cached = getCache(cacheKey);
-    if (cached) return cached;
-
     try {
       const headers = {
         'Accept': 'application/vnd.github.html',
@@ -187,7 +183,6 @@ export function useGitHubApi() {
       const response = await fetch(`https://api.github.com/repos/${ownerRepo}/readme`, { headers });
       if (!response.ok) throw new Error('Failed to load README');
       const text = await response.text();
-      setCache(cacheKey, text);
       return text;
     } catch (err) {
       return "<div class='p-4 text-center text-fg-muted'>Failed to load README or repository has no README.</div>";
