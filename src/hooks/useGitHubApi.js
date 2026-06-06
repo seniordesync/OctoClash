@@ -74,6 +74,7 @@ export function useGitHubApi() {
       ]);
 
       const commitActivity = commitActivityRaw || [];
+      const commitsLastYear = commitActivity.reduce((acc, week) => acc + week.total, 0);
 
       let avgIssueTime = null;
       if (issues && issues.length > 0) {
@@ -95,6 +96,7 @@ export function useGitHubApi() {
         info: repoInfo,
         languages: languages || {},
         commitActivity: commitActivity,
+        commitsLastYear,
         contributors: contributors || [],
         avgIssueTime
       };
