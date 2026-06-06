@@ -90,17 +90,17 @@ export function ComparisonTable({ reposData }) {
           <tr>
             <th className="px-3 py-3 font-semibold sticky left-0 bg-canvas-subtle z-20 border-r border-border-default w-12 text-center">#</th>
             <th className="px-4 py-3 font-semibold sticky left-12 bg-canvas-subtle z-20 border-r border-border-default">Repository</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle"><RepoIcon className="mr-1 inline" />README</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle"><PeopleIcon className="mr-1 inline" />Top Contributors</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle">Created</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle">Last Commit</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle"><GitCommitIcon className="mr-1 inline" />Commits (1y)</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle"><StarIcon className="mr-1 inline" />Stars</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle"><RepoForkedIcon className="mr-1 inline" />Forks</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle"><EyeIcon className="mr-1 inline" />Watchers</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle"><IssueOpenedIcon className="mr-1 inline" />Issues (Open)</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle">Avg Fix Time</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-subtle">Size</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default"><RepoIcon className="mr-1 inline" />README</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default"><PeopleIcon className="mr-1 inline" />Top Contributors</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default">Created</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default">Last Commit</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default"><GitCommitIcon className="mr-1 inline" />Commits (1y)</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default"><StarIcon className="mr-1 inline" />Stars</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default"><RepoForkedIcon className="mr-1 inline" />Forks</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default"><EyeIcon className="mr-1 inline" />Watchers</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default"><IssueOpenedIcon className="mr-1 inline" />Issues (Open)</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default">Avg Fix Time</th>
+            <th className="px-4 py-3 font-semibold border-r border-border-default">Size</th>
             <th className="px-4 py-3 font-semibold"><LawIcon className="mr-1 inline" />License</th>
           </tr>
         </thead>
@@ -113,7 +113,7 @@ export function ComparisonTable({ reposData }) {
                     {info.full_name}
                   </a>
                 </td>
-                <td className="px-4 py-3 text-center border-r border-border-subtle">
+                <td className="px-4 py-3 text-center border-r border-border-muted">
                   <Tooltip text="View README">
                     <button 
                       onClick={() => setPreviewRepo(info.full_name)}
@@ -123,18 +123,18 @@ export function ComparisonTable({ reposData }) {
                     </button>
                   </Tooltip>
                 </td>
-                <td className="px-4 py-2 border-r border-border-subtle">
+                <td className="px-4 py-2 border-r border-border-muted">
                   <ContributorsList contributors={contributors} />
                 </td>
-                <td className="px-4 py-3 text-fg-default border-r border-border-subtle">{format(new Date(info.created_at), 'MMM d, yyyy')}</td>
-                <td className="px-4 py-3 text-fg-default border-r border-border-subtle">{format(new Date(info.pushed_at || info.updated_at), 'MMM d, yyyy')}</td>
-                <td className="px-4 py-3 text-fg-default border-r border-border-subtle">{commitsLastYear?.toLocaleString() || '0'}</td>
-                <td className="px-4 py-3 text-fg-default border-r border-border-subtle">{info.stargazers_count.toLocaleString()}</td>
-                <td className="px-4 py-3 text-fg-default border-r border-border-subtle">{info.forks_count.toLocaleString()}</td>
-                <td className="px-4 py-3 text-fg-default border-r border-border-subtle">{info.subscribers_count?.toLocaleString() || info.watchers_count.toLocaleString()}</td>
-                <td className="px-4 py-3 text-fg-default border-r border-border-subtle">{info.open_issues_count.toLocaleString()}</td>
-                <td className="px-4 py-3 text-fg-default border-r border-border-subtle">{avgIssueTime || <span className="text-fg-muted">-</span>}</td>
-                <td className="px-4 py-3 text-fg-default border-r border-border-subtle">{formatBytes(info.size * 1024)}</td>
+                <td className="px-4 py-3 text-fg-default border-r border-border-muted">{format(new Date(info.created_at), 'MMM d, yyyy')}</td>
+                <td className="px-4 py-3 text-fg-default border-r border-border-muted">{format(new Date(info.pushed_at || info.updated_at), 'MMM d, yyyy')}</td>
+                <td className="px-4 py-3 text-fg-default border-r border-border-muted">{commitsLastYear?.toLocaleString() || '0'}</td>
+                <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.stargazers_count.toLocaleString()}</td>
+                <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.forks_count.toLocaleString()}</td>
+                <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.subscribers_count?.toLocaleString() || info.watchers_count.toLocaleString()}</td>
+                <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.open_issues_count.toLocaleString()}</td>
+                <td className="px-4 py-3 text-fg-default border-r border-border-muted">{avgIssueTime || <span className="text-fg-muted">-</span>}</td>
+                <td className="px-4 py-3 text-fg-default border-r border-border-muted">{formatBytes(info.size * 1024)}</td>
                 <td className="px-4 py-3 text-fg-default">{info.license ? info.license.spdx_id : 'None'}</td>
               </SortableTableRow>
             ))}

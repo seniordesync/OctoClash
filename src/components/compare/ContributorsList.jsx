@@ -7,7 +7,7 @@ export function ContributorsList({ contributors }) {
   const displayContributors = contributors.slice(0, 5);
 
   return (
-    <div className="flex -space-x-2 overflow-hidden py-1">
+    <div className="flex -space-x-2 py-1">
       {displayContributors.map(user => (
         <Tooltip key={user.login} content={user.login}>
           <a href={user.html_url} target="_blank" rel="noreferrer" className="inline-block rounded-full ring-2 ring-canvas-default relative hover:z-10 hover:-translate-y-1 transition-transform">
