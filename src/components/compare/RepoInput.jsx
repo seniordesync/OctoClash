@@ -17,7 +17,7 @@ import {
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  horizontalListSortingStrategy,
+  rectSortingStrategy,
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -26,7 +26,7 @@ function SortableRepoTag({ repo, onRemove }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: repo });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.4 : 1,
   };
@@ -79,7 +79,6 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [activeDragId, setActiveDragId] = useState(null);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -233,34 +232,17 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
         )}
       </div>
 
-      {/* Tag List */}
       <div className="flex flex-wrap gap-2">
         <DndContext 
           sensors={sensors}
           collisionDetection={closestCenter}
-          onDragStart={(e) => setActiveDragId(e.active.id)}
-          onDragEnd={(e) => {
-            setActiveDragId(null);
-            handleDragEnd(e);
-          }}
-          onDragCancel={() => setActiveDragId(null)}
+          onDragEnd={handleDragEnd}
         >
-          <SortableContext items={repos} strategy={horizontalListSortingStrategy}>
+          <SortableContext items={repos} strategy={rectSortingStrategy}>
             {repos.map(repo => (
               <SortableRepoTag key={repo} repo={repo} onRemove={removeRepo} />
             ))}
           </SortableContext>
-          <DragOverlay>
-            {activeDragId ? (
-              <div className="flex items-center gap-2 px-3 py-1 bg-canvas-default border border-border-default rounded-full text-sm text-fg-default shadow-lg scale-105 cursor-grabbing">
-                <RepoIcon size={14} className="text-fg-muted" />
-                <span className="font-semibold">{activeDragId}</span>
-                <button className="text-fg-muted">
-                  <XIcon size={14} />
-                </button>
-              </div>
-            ) : null}
-          </DragOverlay>
         </DndContext>
       </div>
     </div>
