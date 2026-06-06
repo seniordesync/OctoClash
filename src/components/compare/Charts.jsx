@@ -1,4 +1,5 @@
-import React, { useMemo, memo } from 'react';
+import React, { useMemo, memo, useState, useEffect } from 'react';
+import { useGitHubApi } from '../../hooks/useGitHubApi';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { format } from 'date-fns';
 import { ContributorsList } from './ContributorsList';
@@ -6,6 +7,68 @@ import { ContributorsList } from './ContributorsList';
 const COLORS = ['#0969da', '#2da44e', '#cf222e', '#bf3989', '#8250df', '#d4a72c', '#1f2328', '#57606a'];
 
 export const Charts = memo(function Charts({ reposData }) {
+  const { fetchStarHistory } = useGitHubApi();
+  const [starData, setStarData] = useState([]);
+  const [loadingStars, setLoadingStars] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadStars = async () => {
+      if (!reposData || reposData.length === 0) return;
+      setLoadingStars(true);
+      
+      const allHistories = await Promise.all(
+        reposData.map(repo => fetchStarHistory(repo.info.full_name, repo.info.stargazers_count))
+      );
+      
+      if (!isMounted) return;
+
+      const combined = [];
+      const datesSet = new Set();
+      
+      allHistories.forEach((history) => {
+        history.forEach(point => {
+           if (point.date) datesSet.add(point.date.split('T')[0]);
+        });
+      });
+
+      const sortedDates = Array.from(datesSet).sort();
+      
+      sortedDates.forEach(dateStr => {
+         const row = { name: format(new Date(dateStr), 'MMM yyyy'), _rawDate: dateStr };
+         allHistories.forEach((history, idx) => {
+            const repoName = reposData[idx].info.full_name;
+            let starsAtDate = 0;
+            for (let point of history) {
+              if (!point.date) continue;
+              const pointDate = point.date.split('T')[0];
+              if (pointDate <= dateStr) {
+                starsAtDate = Math.max(starsAtDate, point.stars);
+              }
+            }
+            row[repoName] = starsAtDate;
+         });
+         combined.push(row);
+      });
+      
+      // Deduplicate by name (month year) so x-axis is clean, take highest values for that month
+      const deduped = [];
+      const seenNames = new Set();
+      for (let i = combined.length - 1; i >= 0; i--) {
+        if (!seenNames.has(combined[i].name)) {
+          seenNames.add(combined[i].name);
+          deduped.unshift(combined[i]);
+        }
+      }
+
+      setStarData(deduped);
+      setLoadingStars(false);
+    };
+
+    loadStars();
+    return () => { isMounted = false; };
+  }, [reposData, fetchStarHistory]);
+
   const commitData = useMemo(() => {
     if (!reposData || reposData.length === 0) return [];
     const weeksCount = 12;
@@ -106,6 +169,44 @@ export const Charts = memo(function Charts({ reposData }) {
                 ))}
               </BarChart>
             </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Star History Chart */}
+        <div className="bg-canvas-default border border-border-default rounded-md p-4 shadow-sm lg:col-span-2">
+          <h3 className="text-fg-default font-semibold mb-4 flex items-center gap-2">
+            Star History (Sampled)
+            {loadingStars && <span className="text-xs text-fg-muted font-normal animate-pulse">Loading...</span>}
+          </h3>
+          <div className="h-96">
+            {starData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={starData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-muted)" />
+                  <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} />
+                  <YAxis stroke="var(--color-fg-muted)" fontSize={12} />
+                  <RechartsTooltip 
+                    contentStyle={{ backgroundColor: 'var(--color-canvas-default)', borderColor: 'var(--color-border-default)', color: 'var(--color-fg-default)' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: 12, color: 'var(--color-fg-default)' }} />
+                  {reposData.map((repo, idx) => (
+                    <Line 
+                      key={repo.info.full_name} 
+                      type="monotone" 
+                      dataKey={repo.info.full_name} 
+                      stroke={COLORS[idx % COLORS.length]} 
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 5 }}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-fg-muted text-sm">
+                Fetching historical stars...
+              </div>
+            )}
           </div>
         </div>
       </div>

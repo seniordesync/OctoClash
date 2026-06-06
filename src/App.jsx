@@ -5,6 +5,7 @@ import { RepoInput } from './components/compare/RepoInput';
 import { ComparisonTable } from './components/compare/ComparisonTable';
 import { Charts } from './components/compare/Charts';
 import { ReadmeModal } from './components/compare/ReadmeModal';
+import { SharePanel } from './components/compare/SharePanel';
 import { Alert } from './components/ui/Alert';
 import { MonaOctocat } from './assets/MonaOctocat';
 import { useGitHubApi } from './hooks/useGitHubApi';
@@ -111,7 +112,7 @@ function App() {
         )}
 
         {!loading && reposData.length > 0 && (
-          <div className="mt-8">
+          <div className="mt-8" id="compare-container">
             <div className="border-b border-border-default mb-6">
               <nav className="-mb-px flex space-x-6" aria-label="Tabs">
                 <button
@@ -142,6 +143,8 @@ function App() {
             ) : (
               <Charts reposData={reposData} />
             )}
+            
+            <SharePanel targetId="compare-container" />
           </div>
         )}
 
