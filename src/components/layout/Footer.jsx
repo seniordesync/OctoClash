@@ -6,11 +6,15 @@ import { Tooltip } from '../ui/Tooltip';
 import { KeyIcon } from '@primer/octicons-react';
 
 export function Footer() {
-  const { token, setToken } = useAppStore();
+  const token = useAppStore(state => state.token);
+  const setToken = useAppStore(state => state.setToken);
   const [val, setVal] = useState(token);
+  const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
     setToken(val.trim());
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -22,20 +26,23 @@ export function Footer() {
         </div>
 
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 font-medium">
+          <label htmlFor="token-input" className="flex items-center gap-2 font-medium">
             <KeyIcon size={16} />
             GitHub Personal Access Token
-            <a href="https://github.com/settings/tokens/new?description=OctoClash" target="_blank" rel="noreferrer" className="text-accent-fg hover:underline text-xs">(Get one)</a>
+            <a href="https://github.com/settings/tokens/new?description=OctoClash" target="_blank" rel="noreferrer" className="text-fg-accent hover:underline text-xs">(Get one)</a>
             <Tooltip text="Used to bypass API limits. Stored safely in your browser's localStorage." />
           </label>
           <Input 
+            id="token-input"
             type="password" 
             placeholder="ghp_..." 
             className="w-48 h-8 text-xs"
             value={val}
             onChange={e => setVal(e.target.value)}
           />
-          <Button size="sm" onClick={handleSave}>Save</Button>
+          <Button size="sm" onClick={handleSave} variant={saved ? 'primary' : 'default'}>
+            {saved ? 'Saved!' : 'Save'}
+          </Button>
         </div>
       </div>
     </footer>

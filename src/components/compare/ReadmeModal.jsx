@@ -11,13 +11,17 @@ export function ReadmeModal() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     if (previewRepo) {
       setLoading(true);
       fetchReadmeHtml(previewRepo).then(res => {
-        setHtml(res);
-        setLoading(false);
+        if (isMounted) {
+          setHtml(res);
+          setLoading(false);
+        }
       });
     }
+    return () => { isMounted = false; };
   }, [previewRepo, fetchReadmeHtml]);
 
   if (!previewRepo) return null;
@@ -44,7 +48,7 @@ export function ReadmeModal() {
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-8 markdown-body text-fg-default">
+        <div className="flex-1 overflow-y-auto p-8 prose dark:prose-invert max-w-none prose-a:text-fg-accent hover:prose-a:underline">
           {loading ? (
             <div className="flex justify-center py-20">
               <div className="animate-spin w-8 h-8 border-4 border-accent-fg border-t-transparent rounded-full"></div>

@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { useAppStore } from '../../store/appStore';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/Tooltip';
 import { RepoIcon, XIcon, ShieldLockIcon } from '@primer/octicons-react';
 
-export function RepoInput({ onFetchRepo }) {
-  const { repos, removeRepo, infiniteMode, setInfiniteMode } = useAppStore();
+export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
+  const repos = useAppStore(state => state.repos);
+  const removeRepo = useAppStore(state => state.removeRepo);
+  const infiniteMode = useAppStore(state => state.infiniteMode);
+  const setInfiniteMode = useAppStore(state => state.setInfiniteMode);
+  
   const [inputValue, setInputValue] = useState('');
 
   const handleAdd = (e) => {

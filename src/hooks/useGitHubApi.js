@@ -13,7 +13,7 @@ export function useGitHubApi() {
       'Accept': 'application/vnd.github.v3+json',
     };
     if (token) {
-      headers['Authorization'] = `token ${token}`;
+      headers['Authorization'] = `Bearer ${token}`;
     }
     
     const response = await fetch(`https://api.github.com${url}`, { headers });
@@ -25,7 +25,7 @@ export function useGitHubApi() {
       throw new Error('notFound');
     }
     if (!response.ok) {
-       if (response.status === 202) return null; 
+       if (response.status === 202) throw new Error('retryLater');
        throw new Error(`Error: ${response.status}`);
     }
     return response.json();
@@ -43,10 +43,10 @@ export function useGitHubApi() {
       // Use Promise.all to fetch everything concurrently for better performance
       const [repoInfo, languages, commitActivityRaw, contributors, issues] = await Promise.all([
         fetchWithToken(`/repos/${ownerRepo}`),
-        fetchWithToken(`/repos/${ownerRepo}/languages`).catch(() => ({})),
-        fetchWithToken(`/repos/${ownerRepo}/stats/commit_activity`).catch(() => []),
-        fetchWithToken(`/repos/${ownerRepo}/contributors?per_page=5`).catch(() => []),
-        fetchWithToken(`/repos/${ownerRepo}/issues?state=closed&per_page=30`).catch(() => [])
+        fetchWithToken(`/repos/${ownerRepo}/languages`).catch(e => { if (e.message === 'rateLimit') throw e; return {}; }),
+        fetchWithToken(`/repos/${ownerRepo}/stats/commit_activity`).catch(e => { if (e.message === 'rateLimit' || e.message === 'retryLater') throw e; return []; }),
+        fetchWithToken(`/repos/${ownerRepo}/contributors?per_page=5`).catch(e => { if (e.message === 'rateLimit') throw e; return []; }),
+        fetchWithToken(`/repos/${ownerRepo}/issues?state=closed&per_page=30`).catch(e => { if (e.message === 'rateLimit') throw e; return []; })
       ]);
 
       const commitActivity = commitActivityRaw || [];
@@ -58,6 +58,7 @@ export function useGitHubApi() {
         const actualIssues = issues.filter(i => !i.pull_request);
         if (actualIssues.length > 0) {
           const totalMs = actualIssues.reduce((acc, issue) => {
+            if (!issue.closed_at) return acc;
             const created = new Date(issue.created_at).getTime();
             const closed = new Date(issue.closed_at).getTime();
             return acc + (closed - created);
@@ -93,7 +94,7 @@ export function useGitHubApi() {
         'Accept': 'application/vnd.github.html',
       };
       if (token) {
-        headers['Authorization'] = `token ${token}`;
+        headers['Authorization'] = `Bearer ${token}`;
       }
       const response = await fetch(`https://api.github.com/repos/${ownerRepo}/readme`, { headers });
       if (!response.ok) throw new Error('Failed to load README');

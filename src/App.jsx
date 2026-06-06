@@ -11,7 +11,10 @@ import { useGitHubApi } from './hooks/useGitHubApi';
 import { useAppStore } from './store/appStore';
 
 function App() {
-  const { repos, setRepos, addRepo } = useAppStore();
+  const repos = useAppStore(state => state.repos);
+  const setRepos = useAppStore(state => state.setRepos);
+  const addRepo = useAppStore(state => state.addRepo);
+
   const { fetchRepoData, loading, error, setError } = useGitHubApi();
 
   const [reposData, setReposData] = useState([]);
@@ -27,7 +30,7 @@ function App() {
     }
   }, [setRepos]);
 
-  // Sync state repos to URL params and fetch data
+  // Sync state repos to URL params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (repos.length > 0) {
@@ -37,37 +40,46 @@ function App() {
     }
     const newUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, '', newUrl);
+  }, [repos]);
 
-    // Fetch data for all current repos
+  // Fetch data for all current repos
+  useEffect(() => {
+    let isMounted = true;
+
     const loadAll = async () => {
+      if (repos.length === 0) {
+        if (isMounted) setReposData([]);
+        return;
+      }
+
       const results = [];
       for (const repo of repos) {
         // Try fetching or getting from cache
         const data = await fetchRepoData(repo);
-        if (data) {
+        if (data && isMounted) {
           results.push(data);
         }
       }
-      setReposData(results);
+      
+      if (isMounted) {
+        setReposData(results);
+      }
     };
 
-    if (repos.length > 0) {
-      loadAll();
-    } else {
-      setReposData([]);
-    }
-    // We specifically want to trigger when 'repos' array changes.
-    // fetchRepoData handles its own cache.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [repos]);
+    loadAll();
 
-  const handleFetchRepo = async (ownerRepo) => {
+    return () => {
+      isMounted = false;
+    };
+  }, [repos, fetchRepoData]);
+
+  const handleFetchRepo = useCallback(async (ownerRepo) => {
     if (repos.includes(ownerRepo)) return;
     const data = await fetchRepoData(ownerRepo);
     if (data) {
       addRepo(ownerRepo);
     }
-  };
+  }, [repos, fetchRepoData, addRepo]);
 
   const getErrorMessage = (err) => {
     if (err === 'notFound') return 'Repository not found.';

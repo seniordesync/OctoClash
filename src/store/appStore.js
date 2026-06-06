@@ -1,42 +1,34 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-const getInitialTheme = () => {
-  const saved = localStorage.getItem('theme');
-  if (saved) return saved;
-  return 'system';
-};
+export const useAppStore = create(
+  persist(
+    (set) => ({
+      theme: 'system',
+      setTheme: (theme) => set({ theme }),
 
-const getInitialToken = () => {
-  const saved = localStorage.getItem('github_pat');
-  return saved || '';
-};
+      token: '',
+      setToken: (token) => set({ token }),
 
-export const useAppStore = create((set) => ({
-  theme: getInitialTheme(),
-  setTheme: (theme) => {
-    localStorage.setItem('theme', theme);
-    set({ theme });
-  },
+      repos: [],
+      setRepos: (repos) => set({ repos }),
+      addRepo: (repo) => set((state) => {
+        if (state.repos.includes(repo)) return state;
+        return { repos: [...state.repos, repo] };
+      }),
+      removeRepo: (repo) => set((state) => ({
+        repos: state.repos.filter(r => r !== repo)
+      })),
 
-  token: getInitialToken(),
-  setToken: (token) => {
-    localStorage.setItem('github_pat', token);
-    set({ token });
-  },
+      previewRepo: null,
+      setPreviewRepo: (previewRepo) => set({ previewRepo }),
 
-  repos: [],
-  setRepos: (repos) => set({ repos }),
-  addRepo: (repo) => set((state) => {
-    if (state.repos.includes(repo)) return state;
-    return { repos: [...state.repos, repo] };
-  }),
-  removeRepo: (repo) => set((state) => ({
-    repos: state.repos.filter(r => r !== repo)
-  })),
-
-  previewRepo: null,
-  setPreviewRepo: (previewRepo) => set({ previewRepo }),
-
-  infiniteMode: false,
-  setInfiniteMode: (infiniteMode) => set({ infiniteMode }),
-}))
+      infiniteMode: false,
+      setInfiniteMode: (infiniteMode) => set({ infiniteMode }),
+    }),
+    {
+      name: 'octoclash-storage',
+      partialize: (state) => ({ theme: state.theme, token: state.token }),
+    }
+  )
+)

@@ -27,12 +27,16 @@ export function Alert({ message, type = 'error', onClose }) {
   }
 
   return (
-    <div className={`flex items-start gap-3 p-4 border rounded-md ${bgStyles}`}>
-      <Icon className={`mt-0.5 ${textStyles}`} size={16} />
+    <div 
+      className={`flex items-start gap-3 p-4 border rounded-md ${bgStyles}`}
+      role="alert"
+      aria-live="assertive"
+    >
+      <Icon className={`mt-0.5 ${textStyles}`} size={16} aria-hidden="true" />
       <div className="flex-1 text-sm font-semibold">{message}</div>
       {onClose && (
-        <button onClick={onClose} className="text-fg-muted hover:text-fg-default">
-          <XCircleIcon size={16} />
+        <button onClick={onClose} className="text-fg-muted hover:text-fg-default" aria-label="Close alert">
+          <XCircleIcon size={16} aria-hidden="true" />
         </button>
       )}
     </div>

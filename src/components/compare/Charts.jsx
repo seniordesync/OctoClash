@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { format } from 'date-fns';
 import { ContributorsList } from './ContributorsList';
 
 const COLORS = ['#0969da', '#2da44e', '#cf222e', '#bf3989', '#8250df', '#d4a72c', '#1f2328', '#57606a'];
 
-export function Charts({ reposData }) {
+export const Charts = memo(function Charts({ reposData }) {
   const commitData = useMemo(() => {
     if (!reposData || reposData.length === 0) return [];
     const weeksCount = 12;
@@ -41,16 +41,14 @@ export function Charts({ reposData }) {
     });
 
     return Array.from(allLangs).map(lang => {
-      const obj = { name: lang };
+      const obj = { name: lang, _total: 0 };
       reposData.forEach(({ info, languages }) => {
-        obj[info.full_name] = languages[lang] || 0;
+        const bytes = languages[lang] || 0;
+        obj[info.full_name] = bytes;
+        obj._total += bytes;
       });
       return obj;
-    }).sort((a, b) => {
-      const sumA = reposData.reduce((acc, r) => acc + (a[r.info.full_name] || 0), 0);
-      const sumB = reposData.reduce((acc, r) => acc + (b[r.info.full_name] || 0), 0);
-      return sumB - sumA;
-    }).slice(0, 10);
+    }).sort((a, b) => b._total - a._total).slice(0, 10);
   }, [reposData]);
 
   if (!reposData || reposData.length === 0) return null;
