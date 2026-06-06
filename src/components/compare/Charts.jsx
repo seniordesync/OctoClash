@@ -125,4 +125,4 @@ export const Charts = memo(function Charts({ reposData }) {
       </div>
     </div>
   );
-}
+});
