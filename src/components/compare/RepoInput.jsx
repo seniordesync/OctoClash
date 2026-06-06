@@ -12,6 +12,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragOverlay,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -22,11 +23,12 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 
 function SortableRepoTag({ repo, onRemove }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: repo });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: repo });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0.4 : 1,
   };
 
   return (
@@ -76,6 +78,8 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [activeDragId, setActiveDragId] = useState(null);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -100,6 +104,7 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
     const timeoutId = setTimeout(async () => {
       const results = await searchRepos(val);
       setSearchResults(results);
+      setSelectedIndex(-1);
       setShowDropdown(true);
       setIsSearching(false);
     }, 500);
@@ -120,6 +125,29 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
     onFetchRepo(val);
     setInputValue('');
     setShowDropdown(false);
+    setSelectedIndex(-1);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      setShowDropdown(false);
+      return;
+    }
+    
+    if (!showDropdown || searchResults.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev < searchResults.length - 1 ? prev + 1 : prev));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
+    } else if (e.key === 'Enter') {
+      if (selectedIndex >= 0 && searchResults[selectedIndex]) {
+        e.preventDefault();
+        handleAdd(null, searchResults[selectedIndex].full_name);
+      }
+    }
   };
 
   return (
@@ -138,22 +166,28 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
             onFocus={() => {
               if (searchResults.length > 0) setShowDropdown(true);
             }}
+            onKeyDown={handleKeyDown}
             placeholder="owner/repo (e.g., facebook/react)"
-            className="pl-9 w-full"
+            className="pl-9 pr-9 w-full"
           />
+          
+          {isSearching && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="animate-spin w-4 h-4 border-2 border-border-default border-t-fg-accent rounded-full" />
+            </div>
+          )}
           
           {/* Autocomplete Dropdown */}
           {showDropdown && (inputValue.length >= 3 && !inputValue.includes('/')) && (
             <div className="absolute z-50 w-full mt-1 bg-canvas-default border border-border-default rounded-md shadow-lg overflow-hidden">
-              {isSearching && searchResults.length === 0 ? (
-                <div className="p-3 text-sm text-fg-muted text-center">Searching...</div>
-              ) : searchResults.length > 0 ? (
+              {searchResults.length > 0 ? (
                 <ul className="max-h-64 overflow-y-auto">
-                  {searchResults.map(repo => (
+                  {searchResults.map((repo, index) => (
                     <li 
                       key={repo.id}
                       onClick={() => handleAdd(null, repo.full_name)}
-                      className="px-3 py-2 hover:bg-canvas-subtle cursor-pointer border-b border-border-muted last:border-0"
+                      onMouseEnter={() => setSelectedIndex(index)}
+                      className={`px-3 py-2 hover:bg-canvas-subtle cursor-pointer border-b border-border-muted last:border-0 ${index === selectedIndex ? 'bg-canvas-subtle' : ''}`}
                     >
                       <div className="flex justify-between items-start gap-2">
                         <span className="font-semibold text-fg-default truncate">{repo.full_name}</span>
@@ -204,13 +238,29 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
         <DndContext 
           sensors={sensors}
           collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
+          onDragStart={(e) => setActiveDragId(e.active.id)}
+          onDragEnd={(e) => {
+            setActiveDragId(null);
+            handleDragEnd(e);
+          }}
+          onDragCancel={() => setActiveDragId(null)}
         >
           <SortableContext items={repos} strategy={horizontalListSortingStrategy}>
             {repos.map(repo => (
               <SortableRepoTag key={repo} repo={repo} onRemove={removeRepo} />
             ))}
           </SortableContext>
+          <DragOverlay>
+            {activeDragId ? (
+              <div className="flex items-center gap-2 px-3 py-1 bg-canvas-default border border-border-default rounded-full text-sm text-fg-default shadow-lg scale-105 cursor-grabbing">
+                <RepoIcon size={14} className="text-fg-muted" />
+                <span className="font-semibold">{activeDragId}</span>
+                <button className="text-fg-muted">
+                  <XIcon size={14} />
+                </button>
+              </div>
+            ) : null}
+          </DragOverlay>
         </DndContext>
       </div>
     </div>
