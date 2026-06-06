@@ -54,7 +54,6 @@ function SortableTableRow({ repoInfo, index, children }) {
     </tr>
   );
 }
-import { Tooltip } from '../ui/Tooltip';
 
 export function ComparisonTable({ reposData }) {
   const setPreviewRepo = useAppStore(state => state.setPreviewRepo);
