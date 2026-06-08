@@ -1,6 +1,9 @@
 <div align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/GitHub_Invertocat_Logo.svg#gh-dark-mode-only" alt="Logo" width="80" height="80">
-  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png#gh-light-mode-only" alt="Logo" width="80" height="80">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://upload.wikimedia.org/wikipedia/commons/c/c2/GitHub_Invertocat_Logo.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
+    <img alt="Logo" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="80" height="80">
+  </picture>
 
   <h1 align="center">OctoClash</h1>
 
