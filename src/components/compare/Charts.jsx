@@ -154,7 +154,7 @@ export const Charts = memo(function Charts() {
       if (referenceActivity && referenceActivity[targetIndex]) {
         weekTimestamp = referenceActivity[targetIndex].week;
       }
-      point.name = format(new Date(weekTimestamp * 1000), 'MMM d');
+      point.name = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(weekTimestamp * 1000));
 
       reposData.forEach(({ info, commitActivity }) => {
         if (commitActivity && commitActivity[targetIndex]) {
