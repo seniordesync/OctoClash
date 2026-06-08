@@ -91,7 +91,7 @@ export function ComparisonTable({ reposData }) {
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.subscribers_count?.toLocaleString() || info.watchers_count.toLocaleString()}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.open_issues_count.toLocaleString()}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{avgIssueTime || <span className="text-fg-muted">-</span>}</td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{formatBytes(info.size)}</td>
+              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{formatBytes(info.size * 1024)}</td>
               <td className="px-4 py-3 text-fg-default">{info.license ? info.license.spdx_id : 'None'}</td>
             </tr>
           ))}

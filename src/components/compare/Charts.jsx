@@ -7,9 +7,9 @@ import {
 import { format } from 'date-fns';
 import { formatBytes } from '../../utils/helpers';
 import { ContributorsList } from './ContributorsList';
-import { StarIcon, RepoForkedIcon, IssueOpenedIcon, PulseIcon, FlameIcon, CheckCircleIcon } from '@primer/octicons-react';
+import { StarIcon, RepoForkedIcon, PulseIcon, FlameIcon } from '@primer/octicons-react';
 
-// GitHub default language colors (approximated for most common ones, fallback to generic palette)
+// GitHub default language colors
 const GITHUB_LANG_COLORS = {
   JavaScript: '#f1e05a',
   TypeScript: '#3178c6',
@@ -134,13 +134,13 @@ export const Charts = memo(function Charts({ reposData }) {
     if (!reposData || reposData.length === 0) return [];
     const allLangs = new Set();
     reposData.forEach(r => {
-      Object.keys(r.languages).forEach(l => allLangs.add(l));
+      Object.keys(r.languages || {}).forEach(l => allLangs.add(l));
     });
 
     return Array.from(allLangs).map(lang => {
       const obj = { name: lang, _total: 0 };
       reposData.forEach(({ info, languages }) => {
-        const bytes = languages[lang] || 0;
+        const bytes = (languages && languages[lang]) || 0;
         obj[info.full_name] = bytes;
         obj._total += bytes;
       });
@@ -200,28 +200,31 @@ export const Charts = memo(function Charts({ reposData }) {
     });
   }, [reposData, globalLangColors]);
 
-  const highlights = useMemo(() => {
+  const leaderboards = useMemo(() => {
     if (!reposData || reposData.length === 0) return null;
     
-    let mostPopular = reposData[0];
-    let mostActive = reposData[0];
-    let largestCommunity = reposData[0];
-    let fastestRes = reposData[0];
-    
-    const getDays = (str) => {
-      if (!str) return Infinity;
-      if (str === '< 1 day') return 0;
-      return parseInt(str.split(' ')[0], 10) || Infinity;
-    };
+    // Top 3 for Stars
+    const byStars = [...reposData]
+      .sort((a, b) => (b.info.stargazers_count || 0) - (a.info.stargazers_count || 0))
+      .slice(0, 3);
+      
+    // Top 3 for Commits
+    const byCommits = [...reposData]
+      .sort((a, b) => (b.commitsLastYear || 0) - (a.commitsLastYear || 0))
+      .slice(0, 3);
+      
+    // Top 3 for Forks (Community)
+    const byForks = [...reposData]
+      .sort((a, b) => (b.info.forks_count || 0) - (a.info.forks_count || 0))
+      .slice(0, 3);
+      
+    // Top 3 for Update Frequency (Commits per week)
+    const byFrequency = [...reposData].map(r => ({
+      repo: r,
+      commitsPerWeek: Math.round((r.commitsLastYear || 0) / 52)
+    })).sort((a, b) => b.commitsPerWeek - a.commitsPerWeek).slice(0, 3);
 
-    reposData.forEach(repo => {
-      if ((repo.info.stargazers_count || 0) > (mostPopular.info.stargazers_count || 0)) mostPopular = repo;
-      if ((repo.commitsLastYear || 0) > (mostActive.commitsLastYear || 0)) mostActive = repo;
-      if ((repo.info.forks_count || 0) > (largestCommunity.info.forks_count || 0)) largestCommunity = repo;
-      if (getDays(repo.avgIssueTime) < getDays(fastestRes.avgIssueTime)) fastestRes = repo;
-    });
-
-    return { mostPopular, mostActive, largestCommunity, fastestRes };
+    return { byStars, byCommits, byForks, byFrequency };
   }, [reposData]);
 
   if (!reposData || reposData.length === 0) return null;
@@ -229,7 +232,7 @@ export const Charts = memo(function Charts({ reposData }) {
   const tooltipStyle = {
     backgroundColor: 'var(--color-canvas-default)',
     borderColor: 'var(--color-border-default)',
-    color: 'var(--color-fg-default)',
+    color: 'var(--color-fg-default)', // Ensures tooltip text is visible in dark mode
     borderRadius: '6px',
     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
   };
@@ -237,68 +240,126 @@ export const Charts = memo(function Charts({ reposData }) {
   return (
     <div className="mt-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
-      {/* Highlights Cards */}
-      {highlights && (
+      {/* Mini-Leaderboards Cards */}
+      {leaderboards && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-2 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
+          
+          {/* Popularity (Stars) */}
+          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-[0.03] transition-opacity">
               <StarIcon size={80} />
             </div>
             <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
-              <StarIcon size={16} className="text-warning-fg" /> Most Popular
+              <StarIcon size={16} className="text-warning-fg" /> Popularity (Stars)
             </div>
-            <h4 className="text-lg font-bold text-fg-default truncate pr-6 mt-1">
-              <a href={highlights.mostPopular.info.html_url} target="_blank" rel="noreferrer" className="hover:underline hover:text-accent-fg">
-                {highlights.mostPopular.info.full_name}
-              </a>
-            </h4>
-            <p className="text-sm text-fg-muted font-medium">{highlights.mostPopular.info.stargazers_count.toLocaleString()} stars</p>
+            <div className="flex flex-col gap-3 mt-1 z-10">
+              {leaderboards.byStars.map((repo, idx) => {
+                const maxVal = leaderboards.byStars[0].info.stargazers_count || 1;
+                const pct = ((repo.info.stargazers_count || 0) / maxVal) * 100;
+                return (
+                  <div key={repo.info.full_name} className="flex flex-col gap-1.5">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-medium text-fg-default truncate pr-2">
+                        {idx + 1}. {repo.info.name}
+                      </span>
+                      <span className="text-fg-muted font-mono text-xs">{repo.info.stargazers_count.toLocaleString()}</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
+                      <div className="h-full bg-warning-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
           
-          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-2 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
+          {/* Most Active (Commits 1y) */}
+          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-[0.03] transition-opacity">
               <FlameIcon size={80} />
             </div>
             <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
-              <FlameIcon size={16} className="text-danger-fg" /> Most Active
+              <FlameIcon size={16} className="text-danger-fg" /> Total Activity (1y)
             </div>
-            <h4 className="text-lg font-bold text-fg-default truncate pr-6 mt-1">
-              <a href={highlights.mostActive.info.html_url} target="_blank" rel="noreferrer" className="hover:underline hover:text-accent-fg">
-                {highlights.mostActive.info.full_name}
-              </a>
-            </h4>
-            <p className="text-sm text-fg-muted font-medium">{highlights.mostActive.commitsLastYear.toLocaleString()} commits (1y)</p>
+            <div className="flex flex-col gap-3 mt-1 z-10">
+              {leaderboards.byCommits.map((repo, idx) => {
+                const maxVal = leaderboards.byCommits[0].commitsLastYear || 1;
+                const pct = ((repo.commitsLastYear || 0) / maxVal) * 100;
+                return (
+                  <div key={repo.info.full_name} className="flex flex-col gap-1.5">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-medium text-fg-default truncate pr-2">
+                        {idx + 1}. {repo.info.name}
+                      </span>
+                      <span className="text-fg-muted font-mono text-xs">{repo.commitsLastYear.toLocaleString()}</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
+                      <div className="h-full bg-danger-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-2 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
+          {/* Largest Community (Forks) */}
+          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-[0.03] transition-opacity">
               <RepoForkedIcon size={80} />
             </div>
             <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
-              <RepoForkedIcon size={16} className="text-success-fg" /> Largest Community
+              <RepoForkedIcon size={16} className="text-success-fg" /> Community (Forks)
             </div>
-            <h4 className="text-lg font-bold text-fg-default truncate pr-6 mt-1">
-              <a href={highlights.largestCommunity.info.html_url} target="_blank" rel="noreferrer" className="hover:underline hover:text-accent-fg">
-                {highlights.largestCommunity.info.full_name}
-              </a>
-            </h4>
-            <p className="text-sm text-fg-muted font-medium">{highlights.largestCommunity.info.forks_count.toLocaleString()} forks</p>
+            <div className="flex flex-col gap-3 mt-1 z-10">
+              {leaderboards.byForks.map((repo, idx) => {
+                const maxVal = leaderboards.byForks[0].info.forks_count || 1;
+                const pct = ((repo.info.forks_count || 0) / maxVal) * 100;
+                return (
+                  <div key={repo.info.full_name} className="flex flex-col gap-1.5">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-medium text-fg-default truncate pr-2">
+                        {idx + 1}. {repo.info.name}
+                      </span>
+                      <span className="text-fg-muted font-mono text-xs">{repo.info.forks_count.toLocaleString()}</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
+                      <div className="h-full bg-success-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-2 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <CheckCircleIcon size={80} />
+          {/* Update Frequency (Avg commits/week) */}
+          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-[0.03] transition-opacity">
+              <PulseIcon size={80} />
             </div>
             <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
-              <PulseIcon size={16} className="text-done-fg" /> Fastest Fixes
+              <PulseIcon size={16} className="text-done-fg" /> Update Frequency
             </div>
-            <h4 className="text-lg font-bold text-fg-default truncate pr-6 mt-1">
-              <a href={highlights.fastestRes.info.html_url} target="_blank" rel="noreferrer" className="hover:underline hover:text-accent-fg">
-                {highlights.fastestRes.info.full_name}
-              </a>
-            </h4>
-            <p className="text-sm text-fg-muted font-medium">{highlights.fastestRes.avgIssueTime || 'N/A'}</p>
+            <div className="flex flex-col gap-3 mt-1 z-10">
+              {leaderboards.byFrequency.map((item, idx) => {
+                const maxVal = leaderboards.byFrequency[0].commitsPerWeek || 1;
+                const pct = (item.commitsPerWeek / maxVal) * 100;
+                return (
+                  <div key={item.repo.info.full_name} className="flex flex-col gap-1.5">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-medium text-fg-default truncate pr-2" title={item.repo.info.name}>
+                        {idx + 1}. {item.repo.info.name}
+                      </span>
+                      <span className="text-fg-muted font-mono text-xs whitespace-nowrap">{item.commitsPerWeek} / wk</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
+                      <div className="h-full bg-done-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
+
         </div>
       )}
 
@@ -317,7 +378,7 @@ export const Charts = memo(function Charts({ reposData }) {
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-muted)" vertical={false} />
                   <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} dy={10} tickLine={false} axisLine={{ stroke: 'var(--color-border-muted)' }} />
                   <YAxis stroke="var(--color-fg-muted)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => val >= 1000 ? `${(val/1000).toFixed(1)}k` : val} />
-                  <RechartsTooltip contentStyle={tooltipStyle} />
+                  <RechartsTooltip contentStyle={tooltipStyle} itemStyle={{ color: 'var(--color-fg-default)' }} />
                   <Legend wrapperStyle={{ fontSize: 13, color: 'var(--color-fg-default)', paddingTop: '20px' }} />
                   {reposData.map((repo, idx) => (
                     <Line 
@@ -362,7 +423,7 @@ export const Charts = memo(function Charts({ reposData }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-muted)" vertical={false} />
                 <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} dy={10} tickLine={false} axisLine={false} />
                 <YAxis stroke="var(--color-fg-muted)" fontSize={12} tickLine={false} axisLine={false} />
-                <RechartsTooltip contentStyle={tooltipStyle} />
+                <RechartsTooltip contentStyle={tooltipStyle} itemStyle={{ color: 'var(--color-fg-default)' }} />
                 <Legend wrapperStyle={{ fontSize: 13, color: 'var(--color-fg-default)', paddingTop: '20px' }} />
                 {reposData.map((repo, idx) => (
                   <Area 
@@ -403,13 +464,14 @@ export const Charts = memo(function Charts({ reposData }) {
                   </Pie>
                   <RechartsTooltip 
                     contentStyle={tooltipStyle}
+                    itemStyle={{ color: 'var(--color-fg-default)' }}
                     formatter={(value) => [formatBytes(value), 'Total Size']}
                   />
                   <Legend 
                     layout="horizontal" 
                     verticalAlign="bottom" 
                     align="center"
-                    wrapperStyle={{ fontSize: 13, paddingTop: '10px' }}
+                    wrapperStyle={{ fontSize: 13, paddingTop: '10px', color: 'var(--color-fg-default)' }}
                   />
                 </PieChart>
               </ResponsiveContainer>

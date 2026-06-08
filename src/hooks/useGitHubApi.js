@@ -5,11 +5,11 @@ const CACHE_TTL_MS = 1000 * 60 * 60; // 1 hour
 
 const getCache = (key) => {
   try {
-    const item = localStorage.getItem(`octoclash_cache_${key}`);
+    const item = localStorage.getItem(`octoclash_cache_v2_${key}`);
     if (!item) return null;
     const { data, timestamp } = JSON.parse(item);
     if (Date.now() - timestamp > CACHE_TTL_MS) {
-      localStorage.removeItem(`octoclash_cache_${key}`);
+      localStorage.removeItem(`octoclash_cache_v2_${key}`);
       return null;
     }
     return data;
@@ -20,7 +20,7 @@ const getCache = (key) => {
 
 const setCache = (key, data) => {
   try {
-    localStorage.setItem(`octoclash_cache_${key}`, JSON.stringify({
+    localStorage.setItem(`octoclash_cache_v2_${key}`, JSON.stringify({
       data,
       timestamp: Date.now()
     }));
@@ -93,7 +93,7 @@ export function useGitHubApi() {
       }
 
       const result = {
-        info: { ...repoInfo, size: repoInfo.size * 1024 }, // Convert KB to Bytes
+        info: repoInfo, // API returns KB. Do not multiply here.
         languages: languages || {},
         commitActivity: commitActivity,
         commitsLastYear,
