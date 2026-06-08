@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, lazy, Suspense, startTransition } from 'react';
+// Force rebuild and redeploy
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { RepoInput } from './components/compare/RepoInput';
