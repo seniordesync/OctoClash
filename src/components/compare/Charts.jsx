@@ -407,7 +407,7 @@ export const Charts = memo(function Charts({ reposData }) {
         </div>
 
         {/* Commits Area Chart */}
-        <div className="bg-canvas-default border border-border-default rounded-xl p-6 shadow-sm">
+        <div className="bg-canvas-default border border-border-default rounded-xl p-6 shadow-sm lg:col-span-2">
           <h3 className="text-lg text-fg-default font-semibold mb-6">Commit Activity (Last 12 Weeks)</h3>
           <div className="h-[340px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -438,48 +438,6 @@ export const Charts = memo(function Charts({ reposData }) {
                 ))}
               </AreaChart>
             </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Language Pie Chart */}
-        <div className="bg-canvas-default border border-border-default rounded-xl p-6 shadow-sm flex flex-col">
-          <h3 className="text-lg text-fg-default font-semibold mb-6">Overall Technology Stack</h3>
-          <div className="h-[340px] flex-1">
-            {pieLanguageData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                  <Pie
-                    data={pieLanguageData}
-                    cx="50%"
-                    cy="45%"
-                    innerRadius={70}
-                    outerRadius={110}
-                    paddingAngle={2}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {pieLanguageData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip 
-                    contentStyle={tooltipStyle}
-                    itemStyle={{ color: 'var(--color-fg-default)' }}
-                    formatter={(value) => [formatBytes(value), 'Total Size']}
-                  />
-                  <Legend 
-                    layout="horizontal" 
-                    verticalAlign="bottom" 
-                    align="center"
-                    wrapperStyle={{ fontSize: 13, paddingTop: '10px', color: 'var(--color-fg-default)' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-fg-muted text-sm gap-3">
-                No language data available.
-              </div>
-            )}
           </div>
         </div>
 
