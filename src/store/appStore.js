@@ -31,10 +31,18 @@ export const useAppStore = create(
 
       infiniteMode: false,
       setInfiniteMode: (infiniteMode) => set({ infiniteMode }),
+
+      reposData: [],
+      setReposData: (reposData) => set({ reposData }),
     }),
     {
       name: 'octoclash-storage',
-      partialize: (state) => ({ theme: state.theme, token: state.token }),
+      partialize: (state) => ({ 
+        theme: state.theme, 
+        token: state.token,
+        repos: state.repos,
+        infiniteMode: state.infiniteMode
+      }),
     }
   )
 )

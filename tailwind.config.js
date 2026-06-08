@@ -21,8 +21,10 @@ export default {
           default: 'var(--color-fg-default)',
           muted: 'var(--color-fg-muted)',
           accent: 'var(--color-fg-accent)',
-          danger: 'var(--color-fg-danger)',
-          success: 'var(--color-fg-success)',
+          danger: 'rgb(var(--color-fg-danger-rgb) / <alpha-value>)',
+          success: 'rgb(var(--color-fg-success-rgb) / <alpha-value>)',
+          warning: 'rgb(var(--color-fg-warning-rgb) / <alpha-value>)',
+          done: 'rgb(var(--color-fg-done-rgb) / <alpha-value>)',
         },
         btn: {
           bg: 'var(--color-btn-bg)',

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MarkGithubIcon, MoonIcon, SunIcon, SyncIcon } from '@primer/octicons-react';
 import { useAppStore } from '../../store/appStore';
+import { Button } from '../ui/Button';
 
 export function Header() {
   const theme = useAppStore(state => state.theme);
@@ -44,7 +45,9 @@ export function Header() {
       
       <div className="flex items-center gap-4">
         {/* Clear Cache Button */}
-        <button 
+        <Button 
+          variant="default"
+          className="gap-2 p-2"
           onClick={() => {
             Object.keys(localStorage).forEach(key => {
               if (key.startsWith('octoclash_cache_')) {
@@ -54,24 +57,24 @@ export function Header() {
             window.location.reload();
           }}
           aria-label="Clear cache and reload data"
-          className="p-2 border border-border-default rounded-md bg-canvas-default text-fg-muted hover:text-fg-default hover:bg-btn-hoverBg transition-colors flex items-center gap-2"
           title="Force refresh data from GitHub"
         >
           <SyncIcon size={16} />
           <span className="text-xs uppercase font-semibold hidden sm:inline">Refresh Data</span>
-        </button>
+        </Button>
 
         {/* Theme Toggle */}
-        <button 
+        <Button 
+          variant="default"
+          className="gap-2 p-2"
           onClick={toggleTheme}
           aria-label={`Toggle theme. Current theme is ${theme}`}
           aria-live="polite"
-          className="p-2 border border-border-default rounded-md bg-canvas-default text-fg-muted hover:text-fg-default hover:bg-btn-hoverBg transition-colors flex items-center gap-2"
           title={`Theme: ${theme}`}
         >
           <ThemeIcon size={16} />
           <span className="text-xs uppercase font-semibold">{theme}</span>
-        </button>
+        </Button>
       </div>
     </header>
   );

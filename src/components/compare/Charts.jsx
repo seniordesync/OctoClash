@@ -2,12 +2,47 @@ import React, { useMemo, memo, useState, useEffect } from 'react';
 import { useGitHubApi } from '../../hooks/useGitHubApi';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
-  Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area
+  Legend, ResponsiveContainer, AreaChart, Area
 } from 'recharts';
-import { format } from 'date-fns';
-import { formatBytes } from '../../utils/helpers';
 import { ContributorsList } from './ContributorsList';
 import { StarIcon, RepoForkedIcon, PulseIcon, FlameIcon } from '@primer/octicons-react';
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
+
+const LeaderboardCard = memo(({ title, icon: Icon, data, colorVariant, titleClass, valueSuffix = '' }) => {
+  if (!data || data.length === 0) return null;
+  const maxVal = data[0].value || 1;
+  return (
+    <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
+      <div className="absolute -right-4 -top-4 opacity-[0.03] transition-opacity">
+        <Icon size={80} />
+      </div>
+      <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
+        <Icon size={16} className={titleClass} /> {title}
+      </div>
+      <div className="flex flex-col gap-3 mt-1 z-10">
+        {data.map((item, idx) => {
+          const pct = ((item.value || 0) / maxVal) * 100;
+          return (
+            <div key={item.name} className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium text-fg-default truncate pr-2" title={item.name}>
+                  {idx + 1}. {item.name}
+                </span>
+                <span className="text-fg-muted font-mono text-xs whitespace-nowrap">
+                  {(item.value || 0).toLocaleString()}{valueSuffix}
+                </span>
+              </div>
+              <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
+                <div className={`h-full ${colorVariant} rounded-full transition-all duration-1000 ease-out`} style={{ width: `${pct}%` }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
 
 // GitHub default language colors
 const GITHUB_LANG_COLORS = {
@@ -33,7 +68,10 @@ const GITHUB_LANG_COLORS = {
 
 const COLORS = ['#0969da', '#2da44e', '#cf222e', '#bf3989', '#8250df', '#d4a72c', '#0550ae', '#1a7f37', '#a40e26', '#8c2666'];
 
-export const Charts = memo(function Charts({ reposData }) {
+import { useAppStore } from '../../store/appStore';
+
+export const Charts = memo(function Charts() {
+  const reposData = useAppStore(state => state.reposData);
   const { fetchStarHistory } = useGitHubApi();
   const [starData, setStarData] = useState([]);
   const [loadingStars, setLoadingStars] = useState(false);
@@ -64,7 +102,7 @@ export const Charts = memo(function Charts({ reposData }) {
       const sortedDates = Array.from(datesSet).sort();
       
       sortedDates.forEach(dateStr => {
-         const row = { name: format(new Date(dateStr), 'MMM yyyy'), _rawDate: dateStr };
+         const row = { name: dateFormatter.format(new Date(dateStr)), _rawDate: dateStr };
          allHistories.forEach((history, idx) => {
             const repoInfo = reposData[idx].info;
             let starsAtDate = 0;
@@ -243,121 +281,35 @@ export const Charts = memo(function Charts({ reposData }) {
       {leaderboards && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
-          {/* Popularity (Stars) */}
-          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-[0.03] transition-opacity">
-              <StarIcon size={80} />
-            </div>
-            <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
-              <StarIcon size={16} className="text-warning-fg" /> Popularity (Stars)
-            </div>
-            <div className="flex flex-col gap-3 mt-1 z-10">
-              {leaderboards.byStars.map((repo, idx) => {
-                const maxVal = leaderboards.byStars[0].info.stargazers_count || 1;
-                const pct = ((repo.info.stargazers_count || 0) / maxVal) * 100;
-                return (
-                  <div key={repo.info.full_name} className="flex flex-col gap-1.5">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="font-medium text-fg-default truncate pr-2">
-                        {idx + 1}. {repo.info.name}
-                      </span>
-                      <span className="text-fg-muted font-mono text-xs">{(repo.info.stargazers_count || 0).toLocaleString()}</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
-                      <div className="h-full bg-warning-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          
-          {/* Most Active (Commits 1y) */}
-          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-[0.03] transition-opacity">
-              <FlameIcon size={80} />
-            </div>
-            <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
-              <FlameIcon size={16} className="text-danger-fg" /> Total Activity (1y)
-            </div>
-            <div className="flex flex-col gap-3 mt-1 z-10">
-              {leaderboards.byCommits.map((repo, idx) => {
-                const maxVal = leaderboards.byCommits[0].commitsLastYear || 1;
-                const pct = ((repo.commitsLastYear || 0) / maxVal) * 100;
-                return (
-                  <div key={repo.info.full_name} className="flex flex-col gap-1.5">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="font-medium text-fg-default truncate pr-2">
-                        {idx + 1}. {repo.info.name}
-                      </span>
-                      <span className="text-fg-muted font-mono text-xs">{(repo.commitsLastYear || 0).toLocaleString()}</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
-                      <div className="h-full bg-danger-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Largest Community (Forks) */}
-          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-[0.03] transition-opacity">
-              <RepoForkedIcon size={80} />
-            </div>
-            <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
-              <RepoForkedIcon size={16} className="text-success-fg" /> Community (Forks)
-            </div>
-            <div className="flex flex-col gap-3 mt-1 z-10">
-              {leaderboards.byForks.map((repo, idx) => {
-                const maxVal = leaderboards.byForks[0].info.forks_count || 1;
-                const pct = ((repo.info.forks_count || 0) / maxVal) * 100;
-                return (
-                  <div key={repo.info.full_name} className="flex flex-col gap-1.5">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="font-medium text-fg-default truncate pr-2">
-                        {idx + 1}. {repo.info.name}
-                      </span>
-                      <span className="text-fg-muted font-mono text-xs">{(repo.info.forks_count || 0).toLocaleString()}</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
-                      <div className="h-full bg-success-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Update Frequency (Avg commits/week) */}
-          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 opacity-[0.03] transition-opacity">
-              <PulseIcon size={80} />
-            </div>
-            <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
-              <PulseIcon size={16} className="text-done-fg" /> Update Frequency
-            </div>
-            <div className="flex flex-col gap-3 mt-1 z-10">
-              {leaderboards.byFrequency.map((item, idx) => {
-                const maxVal = leaderboards.byFrequency[0].commitsPerWeek || 1;
-                const pct = (item.commitsPerWeek / maxVal) * 100;
-                return (
-                  <div key={item.repo.info.full_name} className="flex flex-col gap-1.5">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="font-medium text-fg-default truncate pr-2" title={item.repo.info.name}>
-                        {idx + 1}. {item.repo.info.name}
-                      </span>
-                      <span className="text-fg-muted font-mono text-xs whitespace-nowrap">{item.commitsPerWeek} / wk</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
-                      <div className="h-full bg-done-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <LeaderboardCard 
+            title="Popularity (Stars)"
+            icon={StarIcon}
+            titleClass="text-fg-warning"
+            colorVariant="bg-fg-warning"
+            data={leaderboards.byStars.map(r => ({ name: r.info.name, value: r.info.stargazers_count }))}
+          />
+          <LeaderboardCard 
+            title="Total Activity (1y)"
+            icon={FlameIcon}
+            titleClass="text-fg-danger"
+            colorVariant="bg-fg-danger"
+            data={leaderboards.byCommits.map(r => ({ name: r.info.name, value: r.commitsLastYear }))}
+          />
+          <LeaderboardCard 
+            title="Community (Forks)"
+            icon={RepoForkedIcon}
+            titleClass="text-fg-success"
+            colorVariant="bg-fg-success"
+            data={leaderboards.byForks.map(r => ({ name: r.info.name, value: r.info.forks_count }))}
+          />
+          <LeaderboardCard 
+            title="Update Frequency"
+            icon={PulseIcon}
+            titleClass="text-fg-done"
+            colorVariant="bg-fg-done"
+            valueSuffix=" / wk"
+            data={leaderboards.byFrequency.map(r => ({ name: r.repo.info.name, value: r.commitsPerWeek }))}
+          />
 
         </div>
       )}

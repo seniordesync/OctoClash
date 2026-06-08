@@ -1,15 +1,16 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, lazy, Suspense, startTransition } from 'react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { RepoInput } from './components/compare/RepoInput';
 import { ComparisonTable } from './components/compare/ComparisonTable';
-import { Charts } from './components/compare/Charts';
-import { ReadmeModal } from './components/compare/ReadmeModal';
 import { SharePanel } from './components/compare/SharePanel';
 import { Alert } from './components/ui/Alert';
 import { MonaOctocat } from './assets/MonaOctocat';
 import { useGitHubApi } from './hooks/useGitHubApi';
 import { useAppStore } from './store/appStore';
+
+const Charts = lazy(() => import('./components/compare/Charts').then(m => ({ default: m.Charts })));
+const ReadmeModal = lazy(() => import('./components/compare/ReadmeModal').then(m => ({ default: m.ReadmeModal })));
 
 function App() {
   const repos = useAppStore(state => state.repos);
@@ -18,7 +19,9 @@ function App() {
 
   const { fetchRepoData, loading, error, setError } = useGitHubApi();
 
-  const [reposData, setReposData] = useState([]);
+  const reposData = useAppStore(state => state.reposData);
+  const setReposData = useAppStore(state => state.setReposData);
+  
   const [activeTab, setActiveTab] = useState('table'); // 'table' | 'charts'
 
   // Initialize repos from URL params on load
@@ -82,11 +85,11 @@ function App() {
     }
   }, [repos, fetchRepoData, addRepo]);
 
-  const getErrorMessage = (err) => {
+  const getErrorMessage = useCallback((err) => {
     if (err === 'notFound') return 'Repository not found.';
     if (err === 'rateLimit') return 'API Rate limit exceeded. Please add a Personal Access Token.';
     return err;
-  };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -116,7 +119,7 @@ function App() {
             <div className="border-b border-border-default mb-6" data-html2canvas-ignore="true">
               <nav className="-mb-px flex space-x-6" aria-label="Tabs">
                 <button
-                  onClick={() => setActiveTab('table')}
+                  onClick={() => startTransition(() => setActiveTab('table'))}
                   className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === 'table' 
                       ? 'border-fg-accent text-fg-default' 
@@ -126,7 +129,7 @@ function App() {
                   Table View
                 </button>
                 <button
-                  onClick={() => setActiveTab('charts')}
+                  onClick={() => startTransition(() => setActiveTab('charts'))}
                   className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === 'charts' 
                       ? 'border-fg-accent text-fg-default' 
@@ -139,9 +142,16 @@ function App() {
             </div>
 
             {activeTab === 'table' ? (
-              <ComparisonTable reposData={reposData} />
+              <ComparisonTable />
             ) : (
-              <Charts reposData={reposData} />
+              <Suspense fallback={
+                <div className="py-24 text-center">
+                  <div className="animate-spin w-8 h-8 border-4 border-fg-accent border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="text-fg-muted">Loading charts...</p>
+                </div>
+              }>
+                <Charts />
+              </Suspense>
             )}
             
             <SharePanel targetId="compare-container" />
@@ -160,7 +170,9 @@ function App() {
       </main>
 
       <Footer />
-      <ReadmeModal />
+      <Suspense fallback={null}>
+        <ReadmeModal />
+      </Suspense>
     </div>
   );
 }

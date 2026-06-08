@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import DOMPurify from 'dompurify';
 import { XIcon } from '@primer/octicons-react';
 import { useAppStore } from '../../store/appStore';
 import { useGitHubApi } from '../../hooks/useGitHubApi';
@@ -17,6 +18,11 @@ export function ReadmeModal() {
       fetchReadmeHtml(previewRepo).then(res => {
         if (isMounted) {
           setHtml(res);
+          setLoading(false);
+        }
+      }).catch(err => {
+        if (isMounted) {
+          setHtml("<div class='p-4 text-center text-fg-muted'>Failed to load README or repository has no README.</div>");
           setLoading(false);
         }
       });
@@ -51,10 +57,10 @@ export function ReadmeModal() {
         <div className="flex-1 overflow-y-auto p-8 prose dark:prose-invert max-w-none prose-a:text-fg-accent hover:prose-a:underline">
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="animate-spin w-8 h-8 border-4 border-accent-fg border-t-transparent rounded-full"></div>
+              <div className="animate-spin w-8 h-8 border-4 border-fg-accent border-t-transparent rounded-full"></div>
             </div>
           ) : (
-            <div dangerouslySetInnerHTML={{ __html: html }} />
+            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }} />
           )}
         </div>
       </div>

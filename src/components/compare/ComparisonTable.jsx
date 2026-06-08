@@ -1,12 +1,13 @@
-import React from 'react';
-import { formatBytes } from '../../utils/helpers';
-import { format } from 'date-fns';
+import React, { memo } from 'react';
 import { StarIcon, RepoForkedIcon, EyeIcon, IssueOpenedIcon, LawIcon, BookIcon, PeopleIcon, RepoIcon, ChevronUpIcon, ChevronDownIcon, GitCommitIcon } from '@primer/octicons-react';
 import { ContributorsList } from './ContributorsList';
 import { useAppStore } from '../../store/appStore';
 import { Tooltip } from '../ui/Tooltip';
 
-export function ComparisonTable({ reposData }) {
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+export const ComparisonTable = memo(function ComparisonTable() {
+  const reposData = useAppStore(state => state.reposData);
   const setPreviewRepo = useAppStore(state => state.setPreviewRepo);
   const reorderRepos = useAppStore(state => state.reorderRepos);
 
@@ -46,19 +47,19 @@ export function ComparisonTable({ reposData }) {
               <td className="px-1 py-1 text-center whitespace-nowrap border-r border-border-muted sticky left-0 bg-canvas-default group-hover:bg-canvas-subtle z-10">
                 <div className="flex flex-col items-center justify-center">
                   <button 
-                    onClick={() => moveUp(index)}
-                    disabled={index === 0}
-                    className={`p-0 rounded ${index === 0 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
-                    aria-label="Move up"
+                    onClick={() => index !== 0 && moveUp(index)}
+                    aria-disabled={index === 0}
+                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-fg ${index === 0 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
+                    aria-label={`Move ${info.name} up`}
                   >
                     <ChevronUpIcon size={16} />
                   </button>
                   <span className="text-xs font-semibold text-fg-muted leading-none my-0.5">{index + 1}</span>
                   <button 
-                    onClick={() => moveDown(index)}
-                    disabled={index === reposData.length - 1}
-                    className={`p-0 rounded ${index === reposData.length - 1 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
-                    aria-label="Move down"
+                    onClick={() => index !== reposData.length - 1 && moveDown(index)}
+                    aria-disabled={index === reposData.length - 1}
+                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-fg ${index === reposData.length - 1 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
+                    aria-label={`Move ${info.name} down`}
                   >
                     <ChevronDownIcon size={16} />
                   </button>
@@ -82,8 +83,8 @@ export function ComparisonTable({ reposData }) {
               <td className="px-4 py-2 border-r border-border-muted">
                 <ContributorsList contributors={contributors} />
               </td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.created_at ? format(new Date(info.created_at), 'MMM d, yyyy') : '-'}</td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.pushed_at || info.updated_at) ? format(new Date(info.pushed_at || info.updated_at), 'MMM d, yyyy') : '-'}</td>
+              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.created_at ? dateFormatter.format(new Date(info.created_at)) : '-'}</td>
+              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.pushed_at || info.updated_at) ? dateFormatter.format(new Date(info.pushed_at || info.updated_at)) : '-'}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{commitsLastYear?.toLocaleString() || '0'}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.stargazers_count || 0).toLocaleString()}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.forks_count || 0).toLocaleString()}</td>
@@ -97,4 +98,4 @@ export function ComparisonTable({ reposData }) {
       </table>
     </div>
   );
-}
+});

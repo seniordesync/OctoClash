@@ -9,20 +9,20 @@ export function Alert({ message, type = 'error', onClose }) {
   let Icon = AlertIcon;
 
   if (type === 'error') {
-    bgStyles = 'bg-[var(--color-fg-danger)] bg-opacity-10 border-[var(--color-fg-danger)] border-opacity-20';
+    bgStyles = 'bg-fg-danger/10 border-fg-danger/20';
     textStyles = 'text-fg-danger';
     Icon = XCircleIcon;
   } else if (type === 'success') {
-    bgStyles = 'bg-[var(--color-fg-success)] bg-opacity-10 border-[var(--color-fg-success)] border-opacity-20';
+    bgStyles = 'bg-fg-success/10 border-fg-success/20';
     textStyles = 'text-fg-success';
     Icon = CheckCircleIcon;
   } else if (type === 'info') {
-    bgStyles = 'bg-[var(--color-fg-accent)] bg-opacity-10 border-[var(--color-fg-accent)] border-opacity-20';
+    bgStyles = 'bg-fg-accent/10 border-fg-accent/20';
     textStyles = 'text-fg-accent';
     Icon = InfoIcon;
   } else if (type === 'warning') {
-    bgStyles = 'bg-[#d4a72c] bg-opacity-10 border-[#d4a72c] border-opacity-20';
-    textStyles = 'text-[#d4a72c]';
+    bgStyles = 'bg-fg-warning/10 border-fg-warning/20';
+    textStyles = 'text-fg-warning';
     Icon = AlertIcon;
   }
 

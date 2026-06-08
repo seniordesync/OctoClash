@@ -1,17 +1,34 @@
 import { useState, useCallback } from 'react';
 import { useAppStore } from '../store/appStore';
 
-const CACHE_TTL_MS = 1000 * 60 * 60; // 1 hour
+// In-memory fallback cache
+const memoryCache = new Map();
 
 const getCache = (key) => {
+  const fullKey = `octoclash_cache_v2_${key}`;
+  
+  // 1. Check in-memory cache first
+  if (memoryCache.has(fullKey)) {
+    const { data, timestamp } = memoryCache.get(fullKey);
+    if (Date.now() - timestamp > CACHE_TTL_MS) {
+      memoryCache.delete(fullKey);
+    } else {
+      return data;
+    }
+  }
+
+  // 2. Check localStorage
   try {
-    const item = localStorage.getItem(`octoclash_cache_v2_${key}`);
+    const item = localStorage.getItem(fullKey);
     if (!item) return null;
     const { data, timestamp } = JSON.parse(item);
     if (Date.now() - timestamp > CACHE_TTL_MS) {
-      localStorage.removeItem(`octoclash_cache_v2_${key}`);
+      localStorage.removeItem(fullKey);
       return null;
     }
+    
+    // Populate memory cache for faster subsequent access
+    memoryCache.set(fullKey, { data, timestamp });
     return data;
   } catch (e) {
     return null;
@@ -19,13 +36,21 @@ const getCache = (key) => {
 };
 
 const setCache = (key, data) => {
+  const fullKey = `octoclash_cache_v2_${key}`;
+  const cacheItem = { data, timestamp: Date.now() };
+
+  // 1. Always write to in-memory cache
+  memoryCache.set(fullKey, cacheItem);
+
+  // 2. Attempt to write to localStorage
   try {
-    localStorage.setItem(`octoclash_cache_v2_${key}`, JSON.stringify({
-      data,
-      timestamp: Date.now()
-    }));
+    localStorage.setItem(fullKey, JSON.stringify(cacheItem));
   } catch (e) {
-    // Ignore quota exceeded
+    if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+      console.warn('localStorage quota exceeded. Relying on in-memory cache.');
+    } else {
+      console.warn('localStorage is unavailable. Relying on in-memory cache.', e);
+    }
   }
 };
 
@@ -34,7 +59,7 @@ export function useGitHubApi() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchWithToken = async (url, customAccept = null) => {
+  const fetchWithToken = useCallback(async (url, customAccept = null, retryCount = 0) => {
     const headers = {
       'Accept': customAccept || 'application/vnd.github.v3+json',
     };
@@ -44,18 +69,23 @@ export function useGitHubApi() {
     
     const response = await fetch(`https://api.github.com${url}`, { headers });
     
-    if (response.status === 403) {
+    const remaining = response.headers.get('X-RateLimit-Remaining');
+    if (remaining === '0' || response.status === 403) {
       throw new Error('rateLimit');
     }
     if (response.status === 404) {
       throw new Error('notFound');
     }
+    if (response.status === 202) {
+      if (retryCount >= 3) throw new Error('retryLater');
+      await new Promise(r => setTimeout(r, 1000 * (retryCount + 1))); // Backoff
+      return fetchWithToken(url, customAccept, retryCount + 1);
+    }
     if (!response.ok) {
-       if (response.status === 202) throw new Error('retryLater');
        throw new Error(`Error: ${response.status}`);
     }
     return response.json();
-  };
+  }, [token]);
 
   const fetchRepoData = useCallback(async (ownerRepo) => {
     const cacheKey = `repo_${ownerRepo}`;
@@ -174,20 +204,19 @@ export function useGitHubApi() {
   }, [token]);
 
   const fetchReadmeHtml = useCallback(async (ownerRepo) => {
-    try {
-      const headers = {
-        'Accept': 'application/vnd.github.html',
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      const response = await fetch(`https://api.github.com/repos/${ownerRepo}/readme`, { headers });
-      if (!response.ok) throw new Error('Failed to load README');
-      const text = await response.text();
-      return text;
-    } catch (err) {
-      return "<div class='p-4 text-center text-fg-muted'>Failed to load README or repository has no README.</div>";
+    const headers = {
+      'Accept': 'application/vnd.github.html',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
+    const response = await fetch(`https://api.github.com/repos/${ownerRepo}/readme`, { headers });
+    
+    const remaining = response.headers.get('X-RateLimit-Remaining');
+    if (remaining === '0' || response.status === 403) throw new Error('rateLimit');
+    
+    if (!response.ok) throw new Error('Failed to load README');
+    return response.text();
   }, [token]);
 
   return { fetchRepoData, searchRepos, fetchStarHistory, fetchReadmeHtml, loading, error, setError };
