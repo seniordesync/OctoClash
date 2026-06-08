@@ -73,11 +73,11 @@ export function useGitHubApi() {
         fetchWithToken(`/repos/${ownerRepo}/issues?state=closed&per_page=30`).catch(e => { if (e.message === 'rateLimit') throw e; return []; })
       ]);
 
-      const commitActivity = commitActivityRaw || [];
+      const commitActivity = Array.isArray(commitActivityRaw) ? commitActivityRaw : [];
       const commitsLastYear = commitActivity.reduce((acc, week) => acc + week.total, 0);
 
       let avgIssueTime = null;
-      if (issues && issues.length > 0) {
+      if (Array.isArray(issues) && issues.length > 0) {
         const actualIssues = issues.filter(i => !i.pull_request);
         if (actualIssues.length > 0) {
           const totalMs = actualIssues.reduce((acc, issue) => {
@@ -93,11 +93,11 @@ export function useGitHubApi() {
       }
 
       const result = {
-        info: repoInfo,
+        info: { ...repoInfo, size: repoInfo.size * 1024 }, // Convert KB to Bytes
         languages: languages || {},
         commitActivity: commitActivity,
         commitsLastYear,
-        contributors: contributors || [],
+        contributors: Array.isArray(contributors) ? contributors : [],
         avgIssueTime
       };
 

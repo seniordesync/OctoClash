@@ -5,6 +5,7 @@ import {
   Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
 import { format } from 'date-fns';
+import { formatBytes } from '../../utils/helpers';
 import { ContributorsList } from './ContributorsList';
 import { StarIcon, RepoForkedIcon, IssueOpenedIcon, CodeIcon } from '@primer/octicons-react';
 
@@ -147,11 +148,11 @@ export const Charts = memo(function Charts({ reposData }) {
   if (!reposData || reposData.length === 0) return null;
 
   const tooltipStyle = {
-    backgroundColor: 'var(--color-canvas-overlay)',
+    backgroundColor: 'var(--color-canvas-default)',
     borderColor: 'var(--color-border-default)',
     color: 'var(--color-fg-default)',
     borderRadius: '6px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
   };
 
   return (
@@ -297,7 +298,7 @@ export const Charts = memo(function Charts({ reposData }) {
                 </Pie>
                 <RechartsTooltip 
                   contentStyle={tooltipStyle}
-                  formatter={(value) => [`${((value / aggregateStats.stars) || value).toLocaleString()} bytes`, 'Total Size']}
+                  formatter={(value) => [formatBytes(value), 'Total Size']}
                 />
                 <Legend 
                   layout="horizontal" 
