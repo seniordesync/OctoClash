@@ -21,6 +21,7 @@ function App() {
 
   const reposData = useAppStore(state => state.reposData);
   const setReposData = useAppStore(state => state.setReposData);
+  const previewRepo = useAppStore(state => state.previewRepo);
   
   const [activeTab, setActiveTab] = useState('table'); // 'table' | 'charts'
   const [isUrlInitialized, setIsUrlInitialized] = useState(false);
@@ -180,7 +181,7 @@ function App() {
       </main>
 
       <Footer />
-      {useAppStore(state => state.previewRepo) && (
+      {previewRepo && (
         <Suspense fallback={null}>
           <ReadmeModal />
         </Suspense>
