@@ -37,7 +37,6 @@ export function ComparisonTable({ reposData }) {
             <th className="px-4 py-3 font-semibold border-r border-border-default"><EyeIcon className="mr-1 inline" />Watchers</th>
             <th className="px-4 py-3 font-semibold border-r border-border-default"><IssueOpenedIcon className="mr-1 inline" />Issues (Open)</th>
             <th className="px-4 py-3 font-semibold border-r border-border-default">Avg Fix Time</th>
-            <th className="px-4 py-3 font-semibold border-r border-border-default">Size</th>
             <th className="px-4 py-3 font-semibold"><LawIcon className="mr-1 inline" />License</th>
           </tr>
         </thead>
@@ -91,7 +90,6 @@ export function ComparisonTable({ reposData }) {
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.subscribers_count || info.watchers_count || 0).toLocaleString()}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.open_issues_count || 0).toLocaleString()}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{avgIssueTime || <span className="text-fg-muted">-</span>}</td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{formatBytes(info.size * 1024)}</td>
               <td className="px-4 py-3 text-fg-default">{info.license ? info.license.spdx_id : 'None'}</td>
             </tr>
           ))}
