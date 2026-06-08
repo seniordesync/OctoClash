@@ -4,10 +4,10 @@
   <h1 align="center">OctoClash</h1>
 
   <p align="center">
-    <strong>Сравнивайте GitHub-репозитории лицом к лицу с красивыми графиками и аналитикой.</strong>
+    <strong>Compare GitHub repositories side-by-side with beautiful charts and deep analytics.</strong>
     <br />
     <br />
-    <a href="https://seniordesync.github.io/OctoClash"><b>✨ Открыть OctoClash ✨</b></a>
+    <a href="https://seniordesync.github.io/OctoClash"><b>✨ Open OctoClash ✨</b></a>
   </p>
 
   <p align="center">
@@ -22,28 +22,30 @@
 
 ---
 
-## 🌟 О проекте
+## 🌟 About The Project
 
-**OctoClash** — это ультимативный дашборд для разработчиков, позволяющий мгновенно сравнить популярность, активность и технологии любых open-source проектов. Больше не нужно открывать кучу вкладок, чтобы понять, какую библиотеку выбрать. Просто введите названия репозиториев, и OctoClash построит наглядные графики.
+**OctoClash** is the ultimate developer dashboard for instantly comparing the popularity, activity, and technology stacks of any open-source projects. No more opening dozens of tabs to decide which library to use. Just type the repository names, and OctoClash will build insightful, interactive charts.
 
-### ✨ Главные фишки
+### ✨ Key Features
 
-- **🏆 Лидерборды**: Наглядные рейтинги по звездам, форкам и активности комьюнити с прогресс-барами.
-- **📈 Интерактивные графики**: История роста звезд, активность коммитов за последние 12 недель и сравнение скорости закрытия багов.
-- **💻 Анализ стека**: Глубокий разбор языков программирования каждого репозитория с точностью до байта.
-- **⚡️ Обход лимитов API**: Поддержка Personal Access Token (PAT) для хардкорных ресерчеров, чтобы анализировать тысячи репозиториев без ограничений.
-- **🎨 Дизайн от GitHub**: Идеальная реализация Primer UI (нативного дизайна GitHub) с поддержкой темной и светлой темы.
+- **🏆 Dynamic Leaderboards**: Visual rankings for Stars, Forks, and Community Activity with animated progress bars.
+- **📈 Interactive Charts**: Track Star Growth History, Commit Activity over the last 12 weeks, and Issue resolution speed.
+- **💻 Tech Stack Breakdown**: Deep analysis of programming languages used in each repository, calculated down to the byte.
+- **⚡️ API Limit Bypass**: Built-in support for Personal Access Tokens (PAT) for hardcore researchers analyzing thousands of repositories without limits.
+- **🎨 GitHub Native Design**: Pixel-perfect implementation of Primer UI (GitHub's native design system) with seamless Dark and Light modes.
 
 ---
 
-## 🛠 Технологии
+## 🛠 Tech Stack
 
-Проект построен на современном стеке:
+Built with a modern and performant stack:
 
 *   ⚛️ **[React + Vite](https://react.dev/)**
 *   🎨 **[Tailwind CSS](https://tailwindcss.com/)**
 *   🐻 **[Zustand](https://github.com/pmndrs/zustand)** 
 *   📊 **[Recharts](https://recharts.org/)**
+
+<br />
 
 <div align="center">
   <sub>Built with ❤️ by seniordesync</sub>
