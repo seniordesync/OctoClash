@@ -73,7 +73,10 @@ export const ComparisonTable = memo(function ComparisonTable() {
               <td className="px-4 py-3 text-center border-r border-border-muted">
                 <Tooltip text="View README">
                   <button 
-                    onClick={() => setPreviewRepo(info.full_name)}
+                    onClick={(e) => {
+                      setPreviewRepo(info.full_name);
+                      e.currentTarget.blur();
+                    }}
                     className="text-fg-muted hover:text-accent-fg p-1 rounded-md transition-colors"
                   >
                     <BookIcon size={16} />
