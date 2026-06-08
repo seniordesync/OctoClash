@@ -11,12 +11,7 @@
   </p>
 
   <p align="center">
-    <a href="https://github.com/seniordesync/OctoClash/blob/main/LICENSE">
-      <img src="https://img.shields.io/github/license/seniordesync/OctoClash.svg?style=for-the-badge&color=2da44e" alt="License" />
-    </a>
-    <a href="https://github.com/seniordesync/OctoClash/stargazers">
-      <img src="https://img.shields.io/github/stars/seniordesync/OctoClash.svg?style=for-the-badge&color=0969da" alt="Stars" />
-    </a>
+    <a href="https://github.com/seniordesync/OctoClash/blob/main/LICENSE"><img src="https://img.shields.io/github/license/seniordesync/OctoClash.svg?style=for-the-badge&color=2da44e" alt="License" /></a>&nbsp;<a href="https://github.com/seniordesync/OctoClash/stargazers"><img src="https://img.shields.io/github/stars/seniordesync/OctoClash.svg?style=for-the-badge&color=0969da" alt="Stars" /></a>
   </p>
 </div>
 
