@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import DOMPurify from 'dompurify';
 import { XIcon } from '@primer/octicons-react';
 import { useAppStore } from '../../store/appStore';
@@ -18,6 +18,23 @@ export function ReadmeModal() {
   const { fetchReadmeHtml } = useGitHubApi();
   const [html, setHtml] = useState('');
   const [loading, setLoading] = useState(false);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setPreviewRepo(null);
+    };
+    if (previewRepo) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+      // Focus the modal wrapper for screen readers
+      if (modalRef.current) modalRef.current.focus();
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [previewRepo, setPreviewRepo]);
 
   useEffect(() => {
     let isMounted = true;
@@ -41,21 +58,31 @@ export function ReadmeModal() {
   if (!previewRepo) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80" onClick={() => setPreviewRepo(null)}>
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80" 
+      onClick={() => setPreviewRepo(null)}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="readme-modal-title"
+    >
       <div 
-        className="bg-canvas-default border border-border-default rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden"
+        ref={modalRef}
+        tabIndex="-1"
+        className="bg-canvas-default border border-border-default rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden outline-none"
         onClick={e => e.stopPropagation()}
       >
         
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border-default bg-canvas-subtle rounded-t-xl">
-          <h2 className="text-fg-default font-semibold text-lg flex items-center gap-2">
+          <h2 id="readme-modal-title" className="text-fg-default font-semibold text-lg flex items-center gap-2">
             <span className="text-fg-muted">README.md</span>
             <span className="text-fg-muted font-normal text-sm">({previewRepo})</span>
           </h2>
           <button 
             onClick={() => setPreviewRepo(null)}
-            className="text-fg-muted hover:text-fg-default p-1 rounded-md hover:bg-canvas-overlay transition-colors"
+            aria-label="Close README"
+            className="text-fg-muted hover:text-fg-default p-1 rounded-md hover:bg-canvas-overlay transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-fg-accent"
           >
             <XIcon size={24} />
           </button>

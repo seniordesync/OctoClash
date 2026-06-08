@@ -68,6 +68,13 @@ const GITHUB_LANG_COLORS = {
 
 const COLORS = ['#0969da', '#2da44e', '#cf222e', '#bf3989', '#8250df', '#d4a72c', '#0550ae', '#1a7f37', '#a40e26', '#8c2666'];
 
+const tooltipStyle = {
+  backgroundColor: 'var(--color-canvas-default)',
+  borderColor: 'var(--color-border-default)',
+  borderRadius: '6px',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
+};
+
 import { useAppStore } from '../../store/appStore';
 
 export const Charts = memo(function Charts() {
@@ -129,9 +136,10 @@ export const Charts = memo(function Charts() {
       for (let i = combined.length - 1; i >= 0; i--) {
         if (!seenNames.has(combined[i].name)) {
           seenNames.add(combined[i].name);
-          deduped.unshift(combined[i]);
+          deduped.push(combined[i]);
         }
       }
+      deduped.reverse();
 
       setStarData(deduped);
       setLoadingStars(false);
@@ -150,9 +158,12 @@ export const Charts = memo(function Charts() {
     for (let i = 0; i < weeksCount; i++) {
       const point = {};
       const targetIndex = 52 - weeksCount + i; 
-      let weekTimestamp = Date.now() / 1000;
+      let weekTimestamp;
       if (referenceActivity && referenceActivity[targetIndex]) {
         weekTimestamp = referenceActivity[targetIndex].week;
+      } else {
+        const currentTimestamp = Date.now() / 1000;
+        weekTimestamp = currentTimestamp - (weeksCount - 1 - i) * 604800;
       }
       point.name = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(weekTimestamp * 1000));
 
@@ -267,13 +278,6 @@ export const Charts = memo(function Charts() {
 
   if (!reposData || reposData.length === 0) return null;
 
-  const tooltipStyle = {
-    backgroundColor: 'var(--color-canvas-default)',
-    borderColor: 'var(--color-border-default)',
-    borderRadius: '6px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
-  };
-
   return (
     <div className="mt-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
@@ -348,10 +352,10 @@ export const Charts = memo(function Charts() {
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-fg-muted text-sm gap-3">
                 {loadingStars ? (
-                  <>
+                  <div role="status" aria-label="Loading historical stars" className="flex flex-col items-center gap-3">
                     <div className="w-8 h-8 border-4 border-border-default border-t-fg-accent rounded-full animate-spin"></div>
                     <p>Fetching historical stars...</p>
-                  </>
+                  </div>
                 ) : 'Not enough data to display star history.'}
               </div>
             )}

@@ -44,6 +44,7 @@ function SortableRepoTag({ repo, onRemove }) {
       <button 
         onPointerDown={(e) => e.stopPropagation()} // Prevent drag start when clicking remove
         onClick={() => onRemove(repo)}
+        aria-label={`Remove ${repo}`}
         className="text-fg-muted hover:text-fg-danger transition-colors cursor-pointer"
       >
         <XIcon size={14} />
@@ -100,15 +101,25 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
     }
 
     setIsSearching(true);
+    let active = true;
     const timeoutId = setTimeout(async () => {
-      const results = await searchRepos(val);
-      setSearchResults(results);
-      setSelectedIndex(-1);
-      setShowDropdown(true);
-      setIsSearching(false);
+      try {
+        const results = await searchRepos(val);
+        if (active) {
+          setSearchResults(results);
+          setSelectedIndex(-1);
+          setShowDropdown(true);
+          setIsSearching(false);
+        }
+      } catch (e) {
+        if (active) setIsSearching(false);
+      }
     }, 500);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      active = false;
+      clearTimeout(timeoutId);
+    };
   }, [inputValue, searchRepos]);
 
   const handleAdd = (e, overrideVal = null) => {
@@ -166,6 +177,9 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
               if (searchResults.length > 0) setShowDropdown(true);
             }}
             onKeyDown={handleKeyDown}
+            aria-label="Repository search"
+            aria-expanded={showDropdown}
+            aria-controls="autocomplete-dropdown"
             placeholder="owner/repo (e.g., facebook/react)"
             className="pl-9 pr-9 w-full"
           />
@@ -180,10 +194,12 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
           {showDropdown && (inputValue.length >= 3 && !inputValue.includes('/')) && (
             <div className="absolute z-50 w-full mt-1 bg-canvas-default border border-border-default rounded-md shadow-lg overflow-hidden">
               {searchResults.length > 0 ? (
-                <ul className="max-h-64 overflow-y-auto">
+                <ul id="autocomplete-dropdown" role="listbox" className="max-h-64 overflow-y-auto">
                   {searchResults.map((repo, index) => (
                     <li 
                       key={repo.id}
+                      role="option"
+                      aria-selected={index === selectedIndex}
                       onClick={() => handleAdd(null, repo.full_name)}
                       onMouseEnter={() => setSelectedIndex(index)}
                       className={`px-3 py-2 hover:bg-canvas-subtle cursor-pointer border-b border-border-muted last:border-0 ${index === selectedIndex ? 'bg-canvas-subtle' : ''}`}

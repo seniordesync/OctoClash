@@ -48,8 +48,8 @@ export const ComparisonTable = memo(function ComparisonTable() {
                 <div className="flex flex-col items-center justify-center">
                   <button 
                     onClick={() => index !== 0 && moveUp(index)}
-                    aria-disabled={index === 0}
-                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-fg ${index === 0 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
+                    disabled={index === 0}
+                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-fg-accent ${index === 0 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
                     aria-label={`Move ${info.name} up`}
                   >
                     <ChevronUpIcon size={16} />
@@ -57,8 +57,8 @@ export const ComparisonTable = memo(function ComparisonTable() {
                   <span className="text-xs font-semibold text-fg-muted leading-none my-0.5">{index + 1}</span>
                   <button 
                     onClick={() => index !== reposData.length - 1 && moveDown(index)}
-                    aria-disabled={index === reposData.length - 1}
-                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-fg ${index === reposData.length - 1 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
+                    disabled={index === reposData.length - 1}
+                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-fg-accent ${index === reposData.length - 1 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
                     aria-label={`Move ${info.name} down`}
                   >
                     <ChevronDownIcon size={16} />
@@ -77,7 +77,7 @@ export const ComparisonTable = memo(function ComparisonTable() {
                       setPreviewRepo(info.full_name);
                       e.currentTarget.blur();
                     }}
-                    className="text-fg-muted hover:text-accent-fg p-1 rounded-md transition-colors"
+                    className="text-fg-muted hover:text-fg-accent p-1 rounded-md transition-colors"
                   >
                     <BookIcon size={16} />
                   </button>

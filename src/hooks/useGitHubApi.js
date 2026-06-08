@@ -3,6 +3,7 @@ import { useAppStore } from '../store/appStore';
 
 // In-memory fallback cache
 const memoryCache = new Map();
+const CACHE_TTL_MS = 1000 * 60 * 60; // 1 hour
 
 const getCache = (key) => {
   const fullKey = `octoclash_cache_v2_${key}`;
@@ -40,6 +41,10 @@ const setCache = (key, data) => {
   const cacheItem = { data, timestamp: Date.now() };
 
   // 1. Always write to in-memory cache
+  if (memoryCache.size >= 50) {
+    const firstKey = memoryCache.keys().next().value;
+    memoryCache.delete(firstKey);
+  }
   memoryCache.set(fullKey, cacheItem);
 
   // 2. Attempt to write to localStorage
@@ -56,8 +61,10 @@ const setCache = (key, data) => {
 
 export function useGitHubApi() {
   const token = useAppStore(state => state.token);
-  const [loading, setLoading] = useState(false);
+  const [loadingCount, setLoadingCount] = useState(0);
   const [error, setError] = useState(null);
+  
+  const loading = loadingCount > 0;
 
   const fetchWithToken = useCallback(async (url, customAccept = null, retryCount = 0) => {
     const headers = {
@@ -70,7 +77,7 @@ export function useGitHubApi() {
     const response = await fetch(`https://api.github.com${url}`, { headers });
     
     const remaining = response.headers.get('X-RateLimit-Remaining');
-    if (remaining === '0' || response.status === 403) {
+    if (remaining === '0' || response.status === 403 || response.status === 429) {
       throw new Error('rateLimit');
     }
     if (response.status === 404) {
@@ -92,15 +99,15 @@ export function useGitHubApi() {
     const cached = getCache(cacheKey);
     if (cached) return cached;
 
-    setLoading(true);
+    setLoadingCount(c => c + 1);
     setError(null);
     try {
       const [repoInfo, languages, commitActivityRaw, contributors, issues] = await Promise.all([
         fetchWithToken(`/repos/${ownerRepo}`),
-        fetchWithToken(`/repos/${ownerRepo}/languages`).catch(e => { if (e.message === 'rateLimit') throw e; return {}; }),
-        fetchWithToken(`/repos/${ownerRepo}/stats/commit_activity`).catch(e => { if (e.message === 'rateLimit') throw e; return []; }),
-        fetchWithToken(`/repos/${ownerRepo}/contributors?per_page=5`).catch(e => { if (e.message === 'rateLimit') throw e; return []; }),
-        fetchWithToken(`/repos/${ownerRepo}/issues?state=closed&per_page=30`).catch(e => { if (e.message === 'rateLimit') throw e; return []; })
+        fetchWithToken(`/repos/${ownerRepo}/languages`).catch(e => { if (e.message === 'rateLimit' || e.name === 'TypeError') throw e; return {}; }),
+        fetchWithToken(`/repos/${ownerRepo}/stats/commit_activity`).catch(e => { if (e.message === 'rateLimit' || e.name === 'TypeError') throw e; return []; }),
+        fetchWithToken(`/repos/${ownerRepo}/contributors?per_page=5`).catch(e => { if (e.message === 'rateLimit' || e.name === 'TypeError') throw e; return []; }),
+        fetchWithToken(`/repos/${ownerRepo}/issues?state=closed&per_page=30`).catch(e => { if (e.message === 'rateLimit' || e.name === 'TypeError') throw e; return []; })
       ]);
 
       const commitActivity = Array.isArray(commitActivityRaw) ? commitActivityRaw : [];
@@ -131,11 +138,11 @@ export function useGitHubApi() {
       };
 
       setCache(cacheKey, result);
-      setLoading(false);
+      setLoadingCount(c => Math.max(0, c - 1));
       return result;
     } catch (err) {
       setError(err.message);
-      setLoading(false);
+      setLoadingCount(c => Math.max(0, c - 1));
       return null;
     }
   }, [token]);
@@ -151,6 +158,7 @@ export function useGitHubApi() {
       setCache(cacheKey, data.items || []);
       return data.items || [];
     } catch (err) {
+      if (err.message === 'rateLimit') throw err;
       return [];
     }
   }, [token]);
@@ -177,7 +185,7 @@ export function useGitHubApi() {
         fetchWithToken(`/repos/${ownerRepo}/stargazers?page=${page}&per_page=100`, 'application/vnd.github.v3.star+json')
       );
       
-      const responses = await Promise.all(requests.map(p => p.catch(e => [])));
+      const responses = await Promise.all(requests.map(p => p.catch(e => { if (e.message === 'rateLimit' || e.name === 'TypeError') throw e; return []; })));
       
       const historyPoints = [];
       responses.forEach((pageData, index) => {
@@ -199,6 +207,7 @@ export function useGitHubApi() {
       setCache(cacheKey, historyPoints);
       return historyPoints;
     } catch (err) {
+      if (err.message === 'rateLimit') throw err;
       return [];
     }
   }, [token]);
@@ -213,7 +222,7 @@ export function useGitHubApi() {
     const response = await fetch(`https://api.github.com/repos/${ownerRepo}/readme`, { headers });
     
     const remaining = response.headers.get('X-RateLimit-Remaining');
-    if (remaining === '0' || response.status === 403) throw new Error('rateLimit');
+    if (remaining === '0' || response.status === 403 || response.status === 429) throw new Error('rateLimit');
     
     if (!response.ok) throw new Error('Failed to load README');
     return response.text();

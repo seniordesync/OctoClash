@@ -23,65 +23,71 @@ function App() {
   const setReposData = useAppStore(state => state.setReposData);
   
   const [activeTab, setActiveTab] = useState('table'); // 'table' | 'charts'
+  const [isUrlInitialized, setIsUrlInitialized] = useState(false);
 
-  // Initialize repos from URL params on load
+  // Sync state between URL and Zustand
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const reposParam = params.get('repos');
-    if (reposParam) {
-      const initialRepos = reposParam.split(',').filter(Boolean);
-      setRepos(initialRepos);
+    if (!isUrlInitialized) {
+      const params = new URLSearchParams(window.location.search);
+      const reposParam = params.get('repos');
+      if (reposParam) {
+        setRepos(reposParam.split(',').filter(Boolean));
+      }
+      setIsUrlInitialized(true);
+      return;
     }
-  }, [setRepos]);
-
-  // Sync state repos to URL params
-  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (repos.length > 0) {
       params.set('repos', repos.join(','));
     } else {
       params.delete('repos');
     }
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState({}, '', newUrl);
-  }, [repos]);
+    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+  }, [repos, isUrlInitialized, setRepos]);
 
-  // Fetch data for all current repos
+  // Fetch data for missing repos in parallel
   useEffect(() => {
     let isMounted = true;
 
-    const loadAll = async () => {
+    const loadMissing = async () => {
       if (repos.length === 0) {
-        if (isMounted) setReposData([]);
+        if (isMounted && reposData.length > 0) setReposData([]);
         return;
       }
 
-      const results = [];
-      for (const repo of repos) {
-        // Try fetching or getting from cache
-        const data = await fetchRepoData(repo);
-        if (data && isMounted) {
-          results.push(data);
+      const missingRepos = repos.filter(repo => !reposData.some(rd => rd.info.full_name.toLowerCase() === repo.toLowerCase()));
+      if (missingRepos.length === 0) return; // No fetching needed if just reordering
+
+      try {
+        const fetchPromises = missingRepos.map(repo => fetchRepoData(repo));
+        const newResults = await Promise.all(fetchPromises);
+        
+        if (isMounted) {
+          const combined = [...reposData, ...newResults.filter(Boolean)];
+          const sorted = repos.map(repo => combined.find(rd => rd.info.full_name.toLowerCase() === repo.toLowerCase())).filter(Boolean);
+          setReposData(sorted);
         }
-      }
-      
-      if (isMounted) {
-        setReposData(results);
+      } catch (e) {
+        console.error('Failed to load repos in parallel', e);
       }
     };
 
-    loadAll();
+    loadMissing();
 
     return () => {
       isMounted = false;
     };
-  }, [repos, fetchRepoData]);
+  }, [repos, reposData, fetchRepoData, setReposData]);
 
   const handleFetchRepo = useCallback(async (ownerRepo) => {
     if (repos.includes(ownerRepo)) return;
-    const data = await fetchRepoData(ownerRepo);
-    if (data) {
-      addRepo(ownerRepo);
+    try {
+      const data = await fetchRepoData(ownerRepo);
+      if (data) {
+        addRepo(ownerRepo);
+      }
+    } catch (e) {
+      console.error(e);
     }
   }, [repos, fetchRepoData, addRepo]);
 
@@ -116,9 +122,12 @@ function App() {
 
         {!loading && reposData.length > 0 && (
           <div className="mt-8" id="compare-container">
-            <div className="border-b border-border-default mb-6" data-html2canvas-ignore="true">
-              <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+          <div className="mt-8" id="compare-container">
+            <div className="border-b border-border-default mb-6">
+              <nav className="-mb-px flex space-x-6" role="tablist" aria-label="Compare Views">
                 <button
+                  role="tab"
+                  aria-selected={activeTab === 'table'}
                   onClick={() => startTransition(() => setActiveTab('table'))}
                   className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === 'table' 
@@ -129,6 +138,8 @@ function App() {
                   Table View
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={activeTab === 'charts'}
                   onClick={() => startTransition(() => setActiveTab('charts'))}
                   className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === 'charts' 
@@ -170,9 +181,12 @@ function App() {
       </main>
 
       <Footer />
-      <Suspense fallback={null}>
-        <ReadmeModal />
-      </Suspense>
+      <Footer />
+      {useAppStore(state => state.previewRepo) && (
+        <Suspense fallback={null}>
+          <ReadmeModal />
+        </Suspense>
+      )}
     </div>
   );
 }
