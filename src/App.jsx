@@ -122,7 +122,6 @@ function App() {
 
         {!loading && reposData.length > 0 && (
           <div className="mt-8" id="compare-container">
-          <div className="mt-8" id="compare-container">
             <div className="border-b border-border-default mb-6">
               <nav className="-mb-px flex space-x-6" role="tablist" aria-label="Compare Views">
                 <button
@@ -180,7 +179,6 @@ function App() {
         )}
       </main>
 
-      <Footer />
       <Footer />
       {useAppStore(state => state.previewRepo) && (
         <Suspense fallback={null}>
