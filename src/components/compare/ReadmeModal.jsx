@@ -62,7 +62,7 @@ export function ReadmeModal() {
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-8 prose dark:prose-invert max-w-none prose-a:text-fg-accent hover:prose-a:underline">
+        <div className="flex-1 overflow-y-auto p-8 prose dark:prose-invert max-w-none prose-a:text-fg-accent hover:prose-a:underline markdown-body">
           {loading ? (
             <div className="flex justify-center py-20">
               <div className="animate-spin w-8 h-8 border-4 border-fg-accent border-t-transparent rounded-full"></div>
