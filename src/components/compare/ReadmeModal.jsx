@@ -4,6 +4,14 @@ import { XIcon } from '@primer/octicons-react';
 import { useAppStore } from '../../store/appStore';
 import { useGitHubApi } from '../../hooks/useGitHubApi';
 
+// Ensure all links open in a new tab securely to prevent reverse tabnabbing
+DOMPurify.addHook('afterSanitizeAttributes', function (node) {
+  if (node.tagName === 'A') {
+    node.setAttribute('target', '_blank');
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
+
 export function ReadmeModal() {
   const previewRepo = useAppStore(state => state.previewRepo);
   const setPreviewRepo = useAppStore(state => state.setPreviewRepo);
