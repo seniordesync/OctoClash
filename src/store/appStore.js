@@ -12,10 +12,20 @@ export const useAppStore = create(
 
       repos: [],
       setRepos: (repos) => set((state) => {
-        const sortedData = repos.map(repo => 
+        const uniqueRepos = [];
+        const seen = new Set();
+        for (const r of repos) {
+          const lower = r.toLowerCase();
+          if (!seen.has(lower)) {
+            seen.add(lower);
+            uniqueRepos.push(r);
+          }
+        }
+        
+        const sortedData = uniqueRepos.map(repo => 
           state.reposData.find(rd => rd?.info?.full_name?.toLowerCase() === repo.toLowerCase())
         ).filter(Boolean);
-        return { repos, reposData: sortedData };
+        return { repos: uniqueRepos, reposData: sortedData };
       }),
       addRepo: (repo) => set((state) => {
         if (state.repos.includes(repo)) return state;
