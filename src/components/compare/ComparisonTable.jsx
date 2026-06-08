@@ -21,12 +21,12 @@ export function ComparisonTable({ reposData }) {
   };
 
   return (
-    <div className="overflow-x-auto border border-border-default rounded-md bg-canvas-default shadow-sm">
-      <table className="w-full text-sm text-left">
-        <thead className="bg-canvas-subtle text-fg-muted border-b border-border-default">
+    <div className="overflow-auto max-h-[70vh] border border-border-default rounded-md bg-canvas-default shadow-sm">
+      <table className="w-full text-sm text-left border-collapse">
+        <thead className="bg-canvas-subtle text-fg-muted sticky top-0 z-30 shadow-[0_1px_0_var(--color-border-default)]">
           <tr>
-            <th className="px-2 py-3 font-semibold sticky left-0 bg-canvas-subtle z-20 border-r border-border-default w-14 text-center">#</th>
-            <th className="px-4 py-3 font-semibold sticky left-14 bg-canvas-subtle z-20 border-r border-border-default">Repository</th>
+            <th className="px-2 py-3 font-semibold sticky left-0 bg-canvas-subtle z-40 border-r border-border-default w-14 text-center">#</th>
+            <th className="px-4 py-3 font-semibold sticky left-14 bg-canvas-subtle z-40 border-r border-border-default">Repository</th>
             <th className="px-4 py-3 font-semibold border-r border-border-default"><RepoIcon className="mr-1 inline" />README</th>
             <th className="px-4 py-3 font-semibold border-r border-border-default"><PeopleIcon className="mr-1 inline" />Top Contributors</th>
             <th className="px-4 py-3 font-semibold border-r border-border-default">Created</th>
