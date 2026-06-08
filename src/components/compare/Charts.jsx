@@ -232,7 +232,6 @@ export const Charts = memo(function Charts({ reposData }) {
   const tooltipStyle = {
     backgroundColor: 'var(--color-canvas-default)',
     borderColor: 'var(--color-border-default)',
-    color: 'var(--color-fg-default)', // Ensures tooltip text is visible in dark mode
     borderRadius: '6px',
     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
   };
@@ -378,7 +377,7 @@ export const Charts = memo(function Charts({ reposData }) {
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-muted)" vertical={false} />
                   <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} dy={10} tickLine={false} axisLine={{ stroke: 'var(--color-border-muted)' }} />
                   <YAxis stroke="var(--color-fg-muted)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => val >= 1000 ? `${(val/1000).toFixed(1)}k` : val} />
-                  <RechartsTooltip contentStyle={tooltipStyle} itemStyle={{ color: 'var(--color-fg-default)' }} />
+                  <RechartsTooltip contentStyle={tooltipStyle} />
                   <Legend wrapperStyle={{ fontSize: 13, color: 'var(--color-fg-default)', paddingTop: '20px' }} />
                   {reposData.map((repo, idx) => (
                     <Line 
@@ -387,8 +386,9 @@ export const Charts = memo(function Charts({ reposData }) {
                       dataKey={repo.info.full_name} 
                       stroke={COLORS[idx % COLORS.length]} 
                       strokeWidth={3}
+                      strokeOpacity={0.85}
                       dot={false}
-                      activeDot={{ r: 6, strokeWidth: 0 }}
+                      activeDot={{ r: 8 - (idx % 4), strokeWidth: 0 }}
                     />
                   ))}
                 </LineChart>
@@ -423,7 +423,7 @@ export const Charts = memo(function Charts({ reposData }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-muted)" vertical={false} />
                 <XAxis dataKey="name" stroke="var(--color-fg-muted)" fontSize={12} dy={10} tickLine={false} axisLine={false} />
                 <YAxis stroke="var(--color-fg-muted)" fontSize={12} tickLine={false} axisLine={false} />
-                <RechartsTooltip contentStyle={tooltipStyle} itemStyle={{ color: 'var(--color-fg-default)' }} />
+                <RechartsTooltip contentStyle={tooltipStyle} />
                 <Legend wrapperStyle={{ fontSize: 13, color: 'var(--color-fg-default)', paddingTop: '20px' }} />
                 {reposData.map((repo, idx) => (
                   <Area 

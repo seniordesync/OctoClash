@@ -1,78 +1,130 @@
 <div align="center">
-  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" width="100" />
-  <h1 align="center">🐙 OctoClash</h1>
+  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="Logo" width="80" height="80">
+
+  <h1 align="center">OctoClash</h1>
+
   <p align="center">
-    <strong>The Ultimate GitHub Repository Comparison Dashboard</strong>
+    <strong>The ultimate tool to compare GitHub repositories side-by-side with beautiful charts and data.</strong>
     <br />
     <br />
-    <a href="https://seniordesync.github.io/OctoClash/"><strong>🚀 View GitHub Pages</strong></a>
-    <br />
-    <br />
+    <a href="https://seniordesync.github.io/OctoClash">View Live Demo</a>
+    ·
+    <a href="https://github.com/seniordesync/OctoClash/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/seniordesync/OctoClash/issues">Request Feature</a>
+  </p>
+
+  <p align="center">
+    <a href="https://github.com/seniordesync/OctoClash/blob/main/LICENSE">
+      <img src="https://img.shields.io/github/license/seniordesync/OctoClash.svg?style=for-the-badge" alt="License" />
+    </a>
+    <a href="https://github.com/seniordesync/OctoClash/stargazers">
+      <img src="https://img.shields.io/github/stars/seniordesync/OctoClash.svg?style=for-the-badge" alt="Stars" />
+    </a>
+    <a href="https://github.com/seniordesync/OctoClash/network/members">
+      <img src="https://img.shields.io/github/forks/seniordesync/OctoClash.svg?style=for-the-badge" alt="Forks" />
+    </a>
   </p>
 </div>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/React-18.2-blue.svg?style=for-the-badge&logo=react" alt="React" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC.svg?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Vite-5.0-646CFF.svg?style=for-the-badge&logo=vite" alt="Vite" />
-  <img src="https://img.shields.io/badge/100%25_Client_Side-Success-success.svg?style=for-the-badge" alt="100% Client Side" />
-</p>
-
----
-
-## 🎯 What is OctoClash?
-
-**OctoClash** is a modern, ultra-fast, and deeply analytical React application that allows developers to perform real-time comparative analysis of multiple GitHub repositories simultaneously.
-
-Tired of opening 10 different tabs to compare commit dates, stargazers, forks, and language distributions? OctoClash solves this by presenting all crucial metrics in one unified, pixel-perfect dashboard that faithfully replicates GitHub's official Primer Design System.
-
 <br />
 
-## ✨ Core Features
-
-### 🔍 Deep Analytical Comparison
-- **Multi-Repo Dashboard:** Compare repositories side-by-side. View detailed stats including stars, forks, issues, recent activity, and repository size.
-- **Smart Autocomplete:** Live-search GitHub repositories with instant results, keyboard navigation, and immediate star-count feedback.
-- **Drag & Drop Organization:** Beautifully arrange your compared repositories using a fluid, physics-based drag-and-drop interface.
-
-### 📊 Visual Data & Charts
-- **Star History:** Track and compare the historical growth of repositories with sampled line charts.
-- **Commit Activity:** See the pulse of a project with 3-month commit activity graphs.
-- **Language Distribution:** Visual bar charts comparing the tech stacks and byte-sizes of the selected codebases.
-- **Top Contributors:** Instantly view the most active developers driving each project forward.
-
-### 🎨 Pixel-Perfect GitHub UX
-- **Primer UI:** Designed strictly following GitHub's official Primer Design System for a seamless, native feel.
-- **Dynamic Theming:** Instant switching between System, Light, and the sleek GitHub Dark Dimmed modes.
-
-### ⚡ Performance & Sharing
-- **100% Client-Side:** No backend, no databases, no hidden telemetry.
-- **Smart Caching:** Local memory caching ensures you never hit GitHub API rate limits unnecessarily.
-- **Shareable Links:** Your exact comparison state is synced to the URL. Copy the link and share it instantly with your team.
-
-<br />
-
-## 🛠️ Technology Stack
-
-We believe in a modern, lightweight, and incredibly fast stack:
-
-*   **Core:** React 18 & Vite
-*   **Styling:** Tailwind CSS (with bespoke GitHub Primer variables)
-*   **State Management:** Zustand (with URL and localStorage persistence)
-*   **Data Visualization:** Recharts
-*   **Interactions:** @dnd-kit (for accessible drag and drop)
-*   **Icons:** @primer/octicons-react
-
-<br />
-
-## 🔐 Privacy & API Limits
-
-OctoClash communicates directly with the public GitHub REST API from your browser. We do not track, store, or proxy any of your requests. 
-
-For heavy usage, you can optionally provide a **Personal Access Token (PAT)** via the secure settings menu. This token is stored exclusively in your browser's local storage and is never transmitted anywhere except directly to `api.github.com`.
-
----
-
+<!-- SCREENSHOT -->
 <div align="center">
-  <p>Built with ❤️ for the open-source community.</p>
+  <img src="https://placehold.co/1000x500/0d1117/c9d1d9?text=Insert+Awesome+Screenshot+Here" alt="OctoClash Dashboard" width="100%">
+  <p><em>Replace this placeholder with an actual screenshot of the OctoClash dashboard.</em></p>
 </div>
+
+<br />
+
+## 🌟 About The Project
+
+Have you ever been torn between two or more open-source libraries? **OctoClash** solves that by allowing you to compare any GitHub repositories against each other in real-time. Simply drag and drop repositories into the arena to view deep insights into their popularity, commit activity, language stack, and community engagement.
+
+Built with a stunning, GitHub-inspired Dark/Light theme, it provides developers with the ultimate analytical dashboard to make informed decisions about the tools they use.
+
+### ✨ Key Features
+
+- **🏆 Dynamic Leaderboards**: See exactly who is winning across categories like Popularity (Stars), Activity (Commits), Community (Forks), and Update Frequency.
+- **📈 Real-Time Charts**: Interactive area, line, and pie charts showcasing Star Growth History and Commit Activity over the last 12 weeks.
+- **💻 Tech Stack Breakdown**: Visual representation of the programming languages used in each repository with precise byte calculations.
+- **⚡️ GitHub API Integration**: Bypasses limits using custom Personal Access Tokens, while aggressively caching responses locally for instant re-loads.
+- **🎨 Primer Design System**: A pixel-perfect implementation of GitHub's native styling (Primer UI) with seamless Dark and Light modes.
+
+---
+
+## 🛠️ Built With
+
+This project is built using modern web development standards and optimized for performance.
+
+*   <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="16px"> **[React (Vite)](https://react.dev/)** - Core frontend framework
+*   <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-plain.svg" width="16px"> **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first styling
+*   🐻 **[Zustand](https://github.com/pmndrs/zustand)** - Lightweight state management
+*   📊 **[Recharts](https://recharts.org/)** - Composable charting library
+*   🐙 **[@primer/octicons](https://primer.style/octicons/)** - Official GitHub icons
+
+---
+
+## 🚀 Getting Started
+
+To get a local copy up and running follow these simple example steps.
+
+### Prerequisites
+
+*   npm
+  ```sh
+  npm install npm@latest -g
+  ```
+
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/seniordesync/OctoClash.git
+   ```
+2. Install NPM packages
+   ```sh
+   cd OctoClash
+   npm install
+   ```
+3. Start the development server
+   ```sh
+   npm run dev
+   ```
+4. Open your browser to `http://localhost:5173`
+
+> [!TIP]
+> **API Limits:** If you are comparing many repositories at once, you might hit GitHub's unauthenticated API rate limit (60 requests/hour). Click the 🔑 Key icon in the header to add your own GitHub Personal Access Token (PAT) and increase your limit to 5,000 requests/hour!
+
+---
+
+## 🛣️ Roadmap
+
+- [x] Initial React Application Setup
+- [x] Basic GitHub API Integration
+- [x] Drag & Drop Comparison Table
+- [x] Advanced Charts (Star Growth, Commits)
+- [x] Leaderboards & Rankings
+- [ ] Automated CI/CD Deployment to GitHub Pages
+
+See the [open issues](https://github.com/seniordesync/OctoClash/issues) for a full list of proposed features (and known issues).
+
+---
+
+## 🤝 Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>

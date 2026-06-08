@@ -43,6 +43,24 @@ export function Header() {
       </div>
       
       <div className="flex items-center gap-4">
+        {/* Clear Cache Button */}
+        <button 
+          onClick={() => {
+            Object.keys(localStorage).forEach(key => {
+              if (key.startsWith('octoclash_cache_')) {
+                localStorage.removeItem(key);
+              }
+            });
+            window.location.reload();
+          }}
+          aria-label="Clear cache and reload data"
+          className="p-2 border border-border-default rounded-md bg-canvas-default text-fg-muted hover:text-fg-default hover:bg-btn-hoverBg transition-colors flex items-center gap-2"
+          title="Force refresh data from GitHub"
+        >
+          <SyncIcon size={16} />
+          <span className="text-xs uppercase font-semibold hidden sm:inline">Refresh Data</span>
+        </button>
+
         {/* Theme Toggle */}
         <button 
           onClick={toggleTheme}
