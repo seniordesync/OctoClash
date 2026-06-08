@@ -2,12 +2,34 @@ import React, { useMemo, memo, useState, useEffect } from 'react';
 import { useGitHubApi } from '../../hooks/useGitHubApi';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, 
-  Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area
+  Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
 import { format } from 'date-fns';
 import { formatBytes } from '../../utils/helpers';
 import { ContributorsList } from './ContributorsList';
-import { StarIcon, RepoForkedIcon, IssueOpenedIcon, CodeIcon } from '@primer/octicons-react';
+import { StarIcon, RepoForkedIcon, IssueOpenedIcon, PulseIcon, FlameIcon, CheckCircleIcon } from '@primer/octicons-react';
+
+// GitHub default language colors (approximated for most common ones, fallback to generic palette)
+const GITHUB_LANG_COLORS = {
+  JavaScript: '#f1e05a',
+  TypeScript: '#3178c6',
+  Python: '#3572A5',
+  Java: '#b07219',
+  'C++': '#f34b7d',
+  C: '#555555',
+  'C#': '#178600',
+  PHP: '#4F5D95',
+  Ruby: '#701516',
+  Go: '#00ADD8',
+  Rust: '#dea584',
+  Swift: '#F05138',
+  Kotlin: '#A97BFF',
+  HTML: '#e34c26',
+  CSS: '#563d7c',
+  Shell: '#89e051',
+  Vue: '#41b883',
+  Svelte: '#ff3e00',
+};
 
 const COLORS = ['#0969da', '#2da44e', '#cf222e', '#bf3989', '#8250df', '#d4a72c', '#0550ae', '#1a7f37', '#a40e26', '#8c2666'];
 
@@ -126,24 +148,81 @@ export const Charts = memo(function Charts({ reposData }) {
     }).sort((a, b) => b._total - a._total).slice(0, 10);
   }, [reposData]);
 
+  const globalLangColors = useMemo(() => {
+    const map = {};
+    let colorIdx = 0;
+    languageData.forEach(l => {
+      map[l.name] = GITHUB_LANG_COLORS[l.name] || COLORS[colorIdx % COLORS.length];
+      if (!GITHUB_LANG_COLORS[l.name]) colorIdx++;
+    });
+    return map;
+  }, [languageData]);
+
   const pieLanguageData = useMemo(() => {
     return languageData.map(item => ({
       name: item.name,
-      value: item._total
+      value: item._total,
+      color: globalLangColors[item.name]
     }));
-  }, [languageData]);
+  }, [languageData, globalLangColors]);
 
-  const aggregateStats = useMemo(() => {
-    if (!reposData) return { stars: 0, forks: 0, issues: 0, topLang: 'None' };
-    let stars = 0, forks = 0, issues = 0;
-    reposData.forEach(r => {
-      stars += r.info.stargazers_count || 0;
-      forks += r.info.forks_count || 0;
-      issues += r.info.open_issues_count || 0;
+  const detailedLanguages = useMemo(() => {
+    if (!reposData) return [];
+    return reposData.map(repo => {
+      const langs = Object.entries(repo.languages || {});
+      const totalBytes = langs.reduce((acc, [_, bytes]) => acc + bytes, 0);
+      
+      const sortedLangs = langs.sort((a, b) => b[1] - a[1]).map(([name, bytes]) => ({
+        name,
+        bytes,
+        percent: totalBytes > 0 ? (bytes / totalBytes) * 100 : 0,
+        color: globalLangColors[name] || '#57606a'
+      }));
+
+      const topLangs = sortedLangs.slice(0, 4);
+      const otherLangs = sortedLangs.slice(4);
+      if (otherLangs.length > 0) {
+        const otherBytes = otherLangs.reduce((acc, l) => acc + l.bytes, 0);
+        topLangs.push({
+          name: 'Other',
+          bytes: otherBytes,
+          percent: totalBytes > 0 ? (otherBytes / totalBytes) * 100 : 0,
+          color: '#57606a'
+        });
+      }
+
+      return {
+        repo: repo.info.full_name,
+        html_url: repo.info.html_url,
+        totalBytes,
+        langs: topLangs
+      };
     });
-    const topLang = languageData.length > 0 ? languageData[0].name : 'None';
-    return { stars, forks, issues, topLang };
-  }, [reposData, languageData]);
+  }, [reposData, globalLangColors]);
+
+  const highlights = useMemo(() => {
+    if (!reposData || reposData.length === 0) return null;
+    
+    let mostPopular = reposData[0];
+    let mostActive = reposData[0];
+    let largestCommunity = reposData[0];
+    let fastestRes = reposData[0];
+    
+    const getDays = (str) => {
+      if (!str) return Infinity;
+      if (str === '< 1 day') return 0;
+      return parseInt(str.split(' ')[0], 10) || Infinity;
+    };
+
+    reposData.forEach(repo => {
+      if ((repo.info.stargazers_count || 0) > (mostPopular.info.stargazers_count || 0)) mostPopular = repo;
+      if ((repo.commitsLastYear || 0) > (mostActive.commitsLastYear || 0)) mostActive = repo;
+      if ((repo.info.forks_count || 0) > (largestCommunity.info.forks_count || 0)) largestCommunity = repo;
+      if (getDays(repo.avgIssueTime) < getDays(fastestRes.avgIssueTime)) fastestRes = repo;
+    });
+
+    return { mostPopular, mostActive, largestCommunity, fastestRes };
+  }, [reposData]);
 
   if (!reposData || reposData.length === 0) return null;
 
@@ -158,45 +237,70 @@ export const Charts = memo(function Charts({ reposData }) {
   return (
     <div className="mt-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-canvas-subtle rounded-lg text-fg-accent">
-            <StarIcon size={24} />
+      {/* Highlights Cards */}
+      {highlights && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-2 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <StarIcon size={80} />
+            </div>
+            <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
+              <StarIcon size={16} className="text-warning-fg" /> Most Popular
+            </div>
+            <h4 className="text-lg font-bold text-fg-default truncate pr-6 mt-1">
+              <a href={highlights.mostPopular.info.html_url} target="_blank" rel="noreferrer" className="hover:underline hover:text-accent-fg">
+                {highlights.mostPopular.info.full_name}
+              </a>
+            </h4>
+            <p className="text-sm text-fg-muted font-medium">{highlights.mostPopular.info.stargazers_count.toLocaleString()} stars</p>
           </div>
-          <div>
-            <p className="text-sm font-medium text-fg-muted">Total Stars</p>
-            <h4 className="text-2xl font-bold text-fg-default">{aggregateStats.stars.toLocaleString()}</h4>
+          
+          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-2 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <FlameIcon size={80} />
+            </div>
+            <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
+              <FlameIcon size={16} className="text-danger-fg" /> Most Active
+            </div>
+            <h4 className="text-lg font-bold text-fg-default truncate pr-6 mt-1">
+              <a href={highlights.mostActive.info.html_url} target="_blank" rel="noreferrer" className="hover:underline hover:text-accent-fg">
+                {highlights.mostActive.info.full_name}
+              </a>
+            </h4>
+            <p className="text-sm text-fg-muted font-medium">{highlights.mostActive.commitsLastYear.toLocaleString()} commits (1y)</p>
+          </div>
+
+          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-2 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <RepoForkedIcon size={80} />
+            </div>
+            <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
+              <RepoForkedIcon size={16} className="text-success-fg" /> Largest Community
+            </div>
+            <h4 className="text-lg font-bold text-fg-default truncate pr-6 mt-1">
+              <a href={highlights.largestCommunity.info.html_url} target="_blank" rel="noreferrer" className="hover:underline hover:text-accent-fg">
+                {highlights.largestCommunity.info.full_name}
+              </a>
+            </h4>
+            <p className="text-sm text-fg-muted font-medium">{highlights.largestCommunity.info.forks_count.toLocaleString()} forks</p>
+          </div>
+
+          <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex flex-col gap-2 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <CheckCircleIcon size={80} />
+            </div>
+            <div className="flex items-center gap-2 text-fg-muted text-sm font-semibold uppercase tracking-wide">
+              <PulseIcon size={16} className="text-done-fg" /> Fastest Fixes
+            </div>
+            <h4 className="text-lg font-bold text-fg-default truncate pr-6 mt-1">
+              <a href={highlights.fastestRes.info.html_url} target="_blank" rel="noreferrer" className="hover:underline hover:text-accent-fg">
+                {highlights.fastestRes.info.full_name}
+              </a>
+            </h4>
+            <p className="text-sm text-fg-muted font-medium">{highlights.fastestRes.avgIssueTime || 'N/A'}</p>
           </div>
         </div>
-        <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-canvas-subtle rounded-lg text-success-fg">
-            <RepoForkedIcon size={24} />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-fg-muted">Total Forks</p>
-            <h4 className="text-2xl font-bold text-fg-default">{aggregateStats.forks.toLocaleString()}</h4>
-          </div>
-        </div>
-        <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-canvas-subtle rounded-lg text-danger-fg">
-            <IssueOpenedIcon size={24} />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-fg-muted">Open Issues</p>
-            <h4 className="text-2xl font-bold text-fg-default">{aggregateStats.issues.toLocaleString()}</h4>
-          </div>
-        </div>
-        <div className="bg-canvas-default border border-border-default rounded-xl p-5 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-canvas-subtle rounded-lg text-done-fg">
-            <CodeIcon size={24} />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-fg-muted">Top Language</p>
-            <h4 className="text-2xl font-bold text-fg-default truncate">{aggregateStats.topLang}</h4>
-          </div>
-        </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
@@ -277,40 +381,101 @@ export const Charts = memo(function Charts({ reposData }) {
         </div>
 
         {/* Language Pie Chart */}
-        <div className="bg-canvas-default border border-border-default rounded-xl p-6 shadow-sm">
+        <div className="bg-canvas-default border border-border-default rounded-xl p-6 shadow-sm flex flex-col">
           <h3 className="text-lg text-fg-default font-semibold mb-6">Overall Technology Stack</h3>
-          <div className="h-[340px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                <Pie
-                  data={pieLanguageData}
-                  cx="50%"
-                  cy="45%"
-                  innerRadius={70}
-                  outerRadius={110}
-                  paddingAngle={2}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {pieLanguageData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <RechartsTooltip 
-                  contentStyle={tooltipStyle}
-                  formatter={(value) => [formatBytes(value), 'Total Size']}
-                />
-                <Legend 
-                  layout="horizontal" 
-                  verticalAlign="bottom" 
-                  align="center"
-                  wrapperStyle={{ fontSize: 13, paddingTop: '10px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="h-[340px] flex-1">
+            {pieLanguageData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                  <Pie
+                    data={pieLanguageData}
+                    cx="50%"
+                    cy="45%"
+                    innerRadius={70}
+                    outerRadius={110}
+                    paddingAngle={2}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {pieLanguageData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    contentStyle={tooltipStyle}
+                    formatter={(value) => [formatBytes(value), 'Total Size']}
+                  />
+                  <Legend 
+                    layout="horizontal" 
+                    verticalAlign="bottom" 
+                    align="center"
+                    wrapperStyle={{ fontSize: 13, paddingTop: '10px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-fg-muted text-sm gap-3">
+                No language data available.
+              </div>
+            )}
           </div>
         </div>
 
+      </div>
+
+      {/* Language Breakdown Table */}
+      <div className="bg-canvas-default border border-border-default rounded-xl p-6 shadow-sm overflow-hidden flex flex-col">
+        <h3 className="text-lg text-fg-default font-semibold mb-6">Language Breakdown by Repository</h3>
+        <div className="overflow-x-auto -mx-6 px-6">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-canvas-subtle text-fg-muted border-b border-border-default">
+              <tr>
+                <th className="px-4 py-3 font-semibold w-1/4">Repository</th>
+                <th className="px-4 py-3 font-semibold w-3/4">Languages</th>
+              </tr>
+            </thead>
+            <tbody>
+              {detailedLanguages.map((details) => (
+                <tr key={details.repo} className="border-b border-border-muted hover:bg-canvas-subtle transition-colors">
+                  <td className="px-4 py-4 font-medium text-fg-accent align-top">
+                    <a href={details.html_url} target="_blank" rel="noreferrer" className="hover:underline">
+                      {details.repo}
+                    </a>
+                  </td>
+                  <td className="px-4 py-4">
+                    {details.langs.length > 0 ? (
+                      <div className="flex flex-col gap-3">
+                        {/* Progress Bar */}
+                        <div className="w-full h-2 rounded-full overflow-hidden flex bg-canvas-subtle">
+                          {details.langs.map((lang) => (
+                            <div 
+                              key={lang.name}
+                              style={{ width: `${lang.percent}%`, backgroundColor: lang.color }}
+                              className="h-full"
+                              title={`${lang.name}: ${lang.percent.toFixed(1)}%`}
+                            />
+                          ))}
+                        </div>
+                        {/* Legend */}
+                        <div className="flex flex-wrap gap-x-4 gap-y-2">
+                          {details.langs.map((lang) => (
+                            <div key={lang.name} className="flex items-center gap-1.5 text-xs text-fg-default">
+                              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: lang.color }}></span>
+                              <span className="font-semibold">{lang.name}</span>
+                              <span className="text-fg-muted">{lang.percent.toFixed(1)}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-fg-muted italic">No languages detected</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Raw Data Table */}
@@ -321,7 +486,6 @@ export const Charts = memo(function Charts({ reposData }) {
             <thead className="bg-canvas-subtle text-fg-muted border-b border-border-default">
               <tr>
                 <th className="px-4 py-3 font-semibold">Repository</th>
-                <th className="px-4 py-3 font-semibold">Primary Language</th>
                 <th className="px-4 py-3 font-semibold">Commits (1y)</th>
                 <th className="px-4 py-3 font-semibold">Stars</th>
                 <th className="px-4 py-3 font-semibold">Forks</th>
@@ -329,25 +493,19 @@ export const Charts = memo(function Charts({ reposData }) {
               </tr>
             </thead>
             <tbody>
-              {reposData.map((repo) => {
-                const primaryLang = repo.languages && Object.keys(repo.languages).length > 0 
-                  ? Object.keys(repo.languages)[0] 
-                  : 'N/A';
-                return (
-                  <tr key={repo.info.full_name} className="border-b border-border-muted hover:bg-canvas-subtle transition-colors">
-                    <td className="px-4 py-3 font-medium text-fg-accent">
-                      <a href={repo.info.html_url} target="_blank" rel="noreferrer" className="hover:underline">
-                        {repo.info.full_name}
-                      </a>
-                    </td>
-                    <td className="px-4 py-3 text-fg-default">{primaryLang}</td>
-                    <td className="px-4 py-3 text-fg-default">{repo.commitsLastYear?.toLocaleString() || 0}</td>
-                    <td className="px-4 py-3 text-fg-default">{repo.info.stargazers_count?.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-fg-default">{repo.info.forks_count?.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-fg-default">{repo.info.open_issues_count?.toLocaleString()}</td>
-                  </tr>
-                );
-              })}
+              {reposData.map((repo) => (
+                <tr key={repo.info.full_name} className="border-b border-border-muted hover:bg-canvas-subtle transition-colors">
+                  <td className="px-4 py-3 font-medium text-fg-accent">
+                    <a href={repo.info.html_url} target="_blank" rel="noreferrer" className="hover:underline">
+                      {repo.info.full_name}
+                    </a>
+                  </td>
+                  <td className="px-4 py-3 text-fg-default">{repo.commitsLastYear?.toLocaleString() || 0}</td>
+                  <td className="px-4 py-3 text-fg-default">{repo.info.stargazers_count?.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-fg-default">{repo.info.forks_count?.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-fg-default">{repo.info.open_issues_count?.toLocaleString()}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
