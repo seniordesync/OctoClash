@@ -83,13 +83,13 @@ export function ComparisonTable({ reposData }) {
               <td className="px-4 py-2 border-r border-border-muted">
                 <ContributorsList contributors={contributors} />
               </td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{format(new Date(info.created_at), 'MMM d, yyyy')}</td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{format(new Date(info.pushed_at || info.updated_at), 'MMM d, yyyy')}</td>
+              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.created_at ? format(new Date(info.created_at), 'MMM d, yyyy') : '-'}</td>
+              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.pushed_at || info.updated_at) ? format(new Date(info.pushed_at || info.updated_at), 'MMM d, yyyy') : '-'}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{commitsLastYear?.toLocaleString() || '0'}</td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.stargazers_count.toLocaleString()}</td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.forks_count.toLocaleString()}</td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.subscribers_count?.toLocaleString() || info.watchers_count.toLocaleString()}</td>
-              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{info.open_issues_count.toLocaleString()}</td>
+              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.stargazers_count || 0).toLocaleString()}</td>
+              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.forks_count || 0).toLocaleString()}</td>
+              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.subscribers_count || info.watchers_count || 0).toLocaleString()}</td>
+              <td className="px-4 py-3 text-fg-default border-r border-border-muted">{(info.open_issues_count || 0).toLocaleString()}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{avgIssueTime || <span className="text-fg-muted">-</span>}</td>
               <td className="px-4 py-3 text-fg-default border-r border-border-muted">{formatBytes(info.size * 1024)}</td>
               <td className="px-4 py-3 text-fg-default">{info.license ? info.license.spdx_id : 'None'}</td>

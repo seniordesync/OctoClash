@@ -68,20 +68,19 @@ export function useGitHubApi() {
       const [repoInfo, languages, commitActivityRaw, contributors, issues] = await Promise.all([
         fetchWithToken(`/repos/${ownerRepo}`),
         fetchWithToken(`/repos/${ownerRepo}/languages`).catch(e => { if (e.message === 'rateLimit') throw e; return {}; }),
-        fetchWithToken(`/repos/${ownerRepo}/stats/commit_activity`).catch(e => { if (e.message === 'rateLimit' || e.message === 'retryLater') throw e; return []; }),
+        fetchWithToken(`/repos/${ownerRepo}/stats/commit_activity`).catch(e => { if (e.message === 'rateLimit') throw e; return []; }),
         fetchWithToken(`/repos/${ownerRepo}/contributors?per_page=5`).catch(e => { if (e.message === 'rateLimit') throw e; return []; }),
         fetchWithToken(`/repos/${ownerRepo}/issues?state=closed&per_page=30`).catch(e => { if (e.message === 'rateLimit') throw e; return []; })
       ]);
 
       const commitActivity = Array.isArray(commitActivityRaw) ? commitActivityRaw : [];
-      const commitsLastYear = commitActivity.reduce((acc, week) => acc + week.total, 0);
+      const commitsLastYear = commitActivity.reduce((acc, week) => acc + (week.total || 0), 0);
 
       let avgIssueTime = null;
       if (Array.isArray(issues) && issues.length > 0) {
-        const actualIssues = issues.filter(i => !i.pull_request);
+        const actualIssues = issues.filter(i => !i.pull_request && i.closed_at);
         if (actualIssues.length > 0) {
           const totalMs = actualIssues.reduce((acc, issue) => {
-            if (!issue.closed_at) return acc;
             const created = new Date(issue.created_at).getTime();
             const closed = new Date(issue.closed_at).getTime();
             return acc + (closed - created);

@@ -262,7 +262,7 @@ export const Charts = memo(function Charts({ reposData }) {
                       <span className="font-medium text-fg-default truncate pr-2">
                         {idx + 1}. {repo.info.name}
                       </span>
-                      <span className="text-fg-muted font-mono text-xs">{repo.info.stargazers_count.toLocaleString()}</span>
+                      <span className="text-fg-muted font-mono text-xs">{(repo.info.stargazers_count || 0).toLocaleString()}</span>
                     </div>
                     <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
                       <div className="h-full bg-warning-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
@@ -291,7 +291,7 @@ export const Charts = memo(function Charts({ reposData }) {
                       <span className="font-medium text-fg-default truncate pr-2">
                         {idx + 1}. {repo.info.name}
                       </span>
-                      <span className="text-fg-muted font-mono text-xs">{repo.commitsLastYear.toLocaleString()}</span>
+                      <span className="text-fg-muted font-mono text-xs">{(repo.commitsLastYear || 0).toLocaleString()}</span>
                     </div>
                     <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
                       <div className="h-full bg-danger-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
@@ -320,7 +320,7 @@ export const Charts = memo(function Charts({ reposData }) {
                       <span className="font-medium text-fg-default truncate pr-2">
                         {idx + 1}. {repo.info.name}
                       </span>
-                      <span className="text-fg-muted font-mono text-xs">{repo.info.forks_count.toLocaleString()}</span>
+                      <span className="text-fg-muted font-mono text-xs">{(repo.info.forks_count || 0).toLocaleString()}</span>
                     </div>
                     <div className="w-full h-1.5 bg-canvas-subtle rounded-full overflow-hidden">
                       <div className="h-full bg-success-fg rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
@@ -563,9 +563,9 @@ export const Charts = memo(function Charts({ reposData }) {
                     </a>
                   </td>
                   <td className="px-4 py-3 text-fg-default">{repo.commitsLastYear?.toLocaleString() || 0}</td>
-                  <td className="px-4 py-3 text-fg-default">{repo.info.stargazers_count?.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-fg-default">{repo.info.forks_count?.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-fg-default">{repo.info.open_issues_count?.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-fg-default">{(repo.info.stargazers_count || 0).toLocaleString()}</td>
+                  <td className="px-4 py-3 text-fg-default">{(repo.info.forks_count || 0).toLocaleString()}</td>
+                  <td className="px-4 py-3 text-fg-default">{(repo.info.open_issues_count || 0).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
