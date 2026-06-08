@@ -13,7 +13,7 @@ export const useAppStore = create(
       repos: [],
       setRepos: (repos) => set((state) => {
         const sortedData = repos.map(repo => 
-          state.reposData.find(rd => rd.info.full_name.toLowerCase() === repo.toLowerCase())
+          state.reposData.find(rd => rd?.info?.full_name?.toLowerCase() === repo.toLowerCase())
         ).filter(Boolean);
         return { repos, reposData: sortedData };
       }),
@@ -23,7 +23,7 @@ export const useAppStore = create(
       }),
       removeRepo: (repo) => set((state) => ({
         repos: state.repos.filter(r => r !== repo),
-        reposData: state.reposData.filter(rd => rd.info.full_name.toLowerCase() !== repo.toLowerCase())
+        reposData: state.reposData.filter(rd => rd?.info?.full_name?.toLowerCase() !== repo.toLowerCase())
       })),
       reorderRepos: (startIndex, endIndex) => set((state) => {
         const result = Array.from(state.repos);
@@ -31,7 +31,7 @@ export const useAppStore = create(
         result.splice(endIndex, 0, removed);
         
         const sortedData = result.map(repo => 
-          state.reposData.find(rd => rd.info.full_name.toLowerCase() === repo.toLowerCase())
+          state.reposData.find(rd => rd?.info?.full_name?.toLowerCase() === repo.toLowerCase())
         ).filter(Boolean);
 
         return { repos: result, reposData: sortedData };

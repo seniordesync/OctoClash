@@ -57,7 +57,7 @@ function App() {
         return;
       }
 
-      const missingRepos = repos.filter(repo => !reposData.some(rd => rd.info.full_name.toLowerCase() === repo.toLowerCase()));
+      const missingRepos = repos.filter(repo => !reposData.some(rd => rd?.info?.full_name?.toLowerCase() === repo.toLowerCase()));
       if (missingRepos.length === 0) return; // No fetching needed if just reordering
 
       try {
@@ -66,7 +66,7 @@ function App() {
         
         if (isMounted) {
           const combined = [...reposData, ...newResults.filter(Boolean)];
-          const sorted = repos.map(repo => combined.find(rd => rd.info.full_name.toLowerCase() === repo.toLowerCase())).filter(Boolean);
+          const sorted = repos.map(repo => combined.find(rd => rd?.info?.full_name?.toLowerCase() === repo.toLowerCase())).filter(Boolean);
           setReposData(sorted);
         }
       } catch (e) {
