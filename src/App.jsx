@@ -65,9 +65,18 @@ function App() {
         const newResults = await Promise.all(fetchPromises);
         
         if (isMounted) {
-          const combined = [...reposData, ...newResults.filter(Boolean)];
+          const successfulResults = newResults.filter(Boolean);
+          const failedRepos = missingRepos.filter((_, idx) => !newResults[idx]);
+          
+          const combined = [...reposData, ...successfulResults];
           const sorted = repos.map(repo => combined.find(rd => rd?.info?.full_name?.toLowerCase() === repo.toLowerCase())).filter(Boolean);
           setReposData(sorted);
+
+          if (failedRepos.length > 0) {
+            const newRepos = repos.filter(r => !failedRepos.includes(r));
+            setRepos(newRepos);
+            setError(`Failed to fetch: ${failedRepos.join(', ')}`);
+          }
         }
       } catch (e) {
         console.error('Failed to load repos in parallel', e);
@@ -79,7 +88,7 @@ function App() {
     return () => {
       isMounted = false;
     };
-  }, [repos, reposData, fetchRepoData, setReposData]);
+  }, [repos, reposData, fetchRepoData, setReposData, setRepos, setError]);
 
   const handleFetchRepo = useCallback(async (ownerRepo) => {
     if (repos.includes(ownerRepo)) return;
