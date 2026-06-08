@@ -88,7 +88,15 @@
 .markdown-body a { color: var(--color-fg-accent); text-decoration: none; }
 .markdown-body a:hover { text-decoration: underline; }
 .markdown-body blockquote { border-left: 0.25em solid var(--color-border-default); padding: 0 1em; color: var(--color-fg-muted); margin-bottom: 16px; }
-.markdown-body img { max-width: 100%; box-sizing: content-box; background-color: var(--color-canvas-default); }
+.markdown-body img { max-width: 100%; box-sizing: content-box; background-color: transparent; }
+
+/* GitHub Dark/Light Mode Image Support */
+html:not(.dark) .markdown-body img[src$="#gh-dark-mode-only"] {
+  display: none !important;
+}
+html.dark .markdown-body img[src$="#gh-light-mode-only"] {
+  display: none !important;
+}
 
 
 /* Custom Scrollbars */

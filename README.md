@@ -1,5 +1,6 @@
 <div align="center">
-  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="Logo" width="80" height="80">
+  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark-Light.png#gh-dark-mode-only" alt="Logo" width="80" height="80">
+  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png#gh-light-mode-only" alt="Logo" width="80" height="80">
 
   <h1 align="center">OctoClash</h1>
 
