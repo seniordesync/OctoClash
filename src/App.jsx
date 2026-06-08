@@ -69,13 +69,34 @@ function App() {
           const failedRepos = missingRepos.filter((_, idx) => !newResults[idx]);
           
           const combined = [...reposData, ...successfulResults];
-          const sorted = repos.map(repo => combined.find(rd => rd?.info?.full_name?.toLowerCase() === repo.toLowerCase())).filter(Boolean);
+          
+          let updatedRepos = [...repos];
+          let reposChanged = false;
+
+          const sorted = updatedRepos.map((repo, i) => {
+            let found = combined.find(rd => rd?.info?.full_name?.toLowerCase() === repo.toLowerCase());
+            
+            if (!found) {
+              const fetchIdx = missingRepos.findIndex(mr => mr.toLowerCase() === repo.toLowerCase());
+              if (fetchIdx >= 0 && newResults[fetchIdx]) {
+                found = newResults[fetchIdx];
+                updatedRepos[i] = found.info.full_name;
+                reposChanged = true;
+              }
+            }
+            return found;
+          }).filter(Boolean);
+          
           setReposData(sorted);
 
           if (failedRepos.length > 0) {
-            const newRepos = repos.filter(r => !failedRepos.includes(r));
-            setRepos(newRepos);
+            updatedRepos = updatedRepos.filter(r => !failedRepos.includes(r));
+            reposChanged = true;
             setError(`Failed to fetch: ${failedRepos.join(', ')}`);
+          }
+
+          if (reposChanged) {
+            setRepos(updatedRepos);
           }
         }
       } catch (e) {
