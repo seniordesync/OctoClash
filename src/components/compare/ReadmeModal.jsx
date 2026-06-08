@@ -94,7 +94,7 @@ export function ReadmeModal() {
               <div className="animate-spin w-8 h-8 border-4 border-fg-accent border-t-transparent rounded-full"></div>
             </div>
           ) : (
-            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }} />
+            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html, { USE_PROFILES: { html: true, svg: true, mathMl: true }, ADD_ATTR: ['target'], ADD_TAGS: ['picture', 'source'] }) }} />
           )}
         </div>
       </div>
