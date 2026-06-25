@@ -44,7 +44,12 @@ function App() {
     } else {
       params.delete('repos');
     }
-    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+    const nextSearch = params.toString();
+    const nextUrl = nextSearch ? `${window.location.pathname}?${nextSearch}` : window.location.pathname;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (nextUrl !== currentUrl) {
+      window.history.replaceState({}, '', nextUrl);
+    }
   }, [repos, isUrlInitialized, setRepos]);
 
   // Fetch data for missing repos in parallel
@@ -87,7 +92,11 @@ function App() {
             return found;
           }).filter(Boolean);
           
-          setReposData(sorted);
+          const currentKeys = reposData.map(rd => rd?.info?.full_name?.toLowerCase()).join('|');
+          const nextKeys = sorted.map(rd => rd?.info?.full_name?.toLowerCase()).join('|');
+          if (currentKeys !== nextKeys) {
+            setReposData(sorted);
+          }
 
           if (failedRepos.length > 0) {
             updatedRepos = updatedRepos.filter(r => !failedRepos.includes(r));

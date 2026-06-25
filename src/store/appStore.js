@@ -1,6 +1,13 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
+const normalizeRepo = (repo) => repo.trim().toLowerCase();
+
+const areReposEqual = (a, b) => {
+  if (a.length !== b.length) return false;
+  return a.every((repo, index) => normalizeRepo(repo) === normalizeRepo(b[index]));
+};
+
 export const useAppStore = create(
   persist(
     (set) => ({
@@ -15,11 +22,15 @@ export const useAppStore = create(
         const uniqueRepos = [];
         const seen = new Set();
         for (const r of repos) {
-          const lower = r.toLowerCase();
+          const lower = normalizeRepo(r);
           if (!seen.has(lower)) {
             seen.add(lower);
-            uniqueRepos.push(r);
+            uniqueRepos.push(r.trim());
           }
+        }
+
+        if (areReposEqual(state.repos, uniqueRepos)) {
+          return state;
         }
         
         const sortedData = uniqueRepos.map(repo => 
@@ -28,12 +39,13 @@ export const useAppStore = create(
         return { repos: uniqueRepos, reposData: sortedData };
       }),
       addRepo: (repo) => set((state) => {
-        if (state.repos.includes(repo)) return state;
-        return { repos: [...state.repos, repo] };
+        const nextRepo = repo.trim();
+        if (state.repos.some(existing => normalizeRepo(existing) === normalizeRepo(nextRepo))) return state;
+        return { repos: [...state.repos, nextRepo] };
       }),
       removeRepo: (repo) => set((state) => ({
-        repos: state.repos.filter(r => r !== repo),
-        reposData: state.reposData.filter(rd => rd?.info?.full_name?.toLowerCase() !== repo.toLowerCase())
+        repos: state.repos.filter(r => normalizeRepo(r) !== normalizeRepo(repo)),
+        reposData: state.reposData.filter(rd => rd?.info?.full_name?.toLowerCase() !== normalizeRepo(repo))
       })),
       reorderRepos: (startIndex, endIndex) => set((state) => {
         const result = Array.from(state.repos);
