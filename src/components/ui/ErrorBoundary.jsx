@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertIcon, SyncIcon } from '@primer/octicons-react';
+import { clearOctoClashSession, clearOctoClashStorage } from '../../utils/storage';
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -39,10 +40,11 @@ export class ErrorBoundary extends React.Component {
             </div>
             <button
               onClick={() => {
-                localStorage.clear();
+                clearOctoClashStorage();
+                clearOctoClashSession();
                 window.location.reload();
               }}
-              className="flex items-center justify-center gap-2 w-full bg-btn-primary-bg hover:bg-btn-primary-hover-bg text-white font-semibold py-2 px-4 rounded-md transition-colors"
+              className="flex items-center justify-center gap-2 w-full bg-btn-primaryBg hover:bg-btn-primaryHoverBg text-white font-semibold py-2 px-4 rounded-md transition-colors"
             >
               <SyncIcon />
               Clear Cache & Reload

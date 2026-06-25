@@ -30,7 +30,7 @@ export function Footer() {
             <KeyIcon size={16} />
             GitHub Personal Access Token
             <a href="https://github.com/settings/tokens/new?description=OctoClash" target="_blank" rel="noreferrer" className="text-fg-accent hover:underline text-xs">(Get one)</a>
-            <Tooltip text="Used to bypass API limits. Stored safely in your browser's localStorage." />
+            <Tooltip text="Used to bypass API limits. Kept only for this browser session." />
           </label>
           <Input 
             id="token-input"

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
 export const useAppStore = create(
   persist(
@@ -58,6 +58,7 @@ export const useAppStore = create(
     }),
     {
       name: 'octoclash-storage',
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({ 
         theme: state.theme, 
         token: state.token,

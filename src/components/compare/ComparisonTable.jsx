@@ -49,7 +49,7 @@ export const ComparisonTable = memo(function ComparisonTable() {
                   <button 
                     onClick={() => index !== 0 && moveUp(index)}
                     disabled={index === 0}
-                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-fg-accent ${index === 0 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
+                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-fg-accent ${index === 0 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hoverBg'}`}
                     aria-label={`Move ${info.name} up`}
                   >
                     <ChevronUpIcon size={16} />
@@ -58,7 +58,7 @@ export const ComparisonTable = memo(function ComparisonTable() {
                   <button 
                     onClick={() => index !== reposData.length - 1 && moveDown(index)}
                     disabled={index === reposData.length - 1}
-                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-fg-accent ${index === reposData.length - 1 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hover-bg'}`}
+                    className={`p-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-fg-accent ${index === reposData.length - 1 ? 'text-transparent cursor-default' : 'text-fg-muted hover:text-fg-default hover:bg-btn-hoverBg'}`}
                     aria-label={`Move ${info.name} down`}
                   >
                     <ChevronDownIcon size={16} />

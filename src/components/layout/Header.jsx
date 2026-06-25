@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MarkGithubIcon, MoonIcon, SunIcon, SyncIcon } from '@primer/octicons-react';
 import { useAppStore } from '../../store/appStore';
 import { Button } from '../ui/Button';
+import { clearOctoClashStorage } from '../../utils/storage';
 
 export function Header() {
   const theme = useAppStore(state => state.theme);
@@ -49,11 +50,7 @@ export function Header() {
           variant="default"
           className="gap-2 p-2"
           onClick={() => {
-            Object.keys(localStorage).forEach(key => {
-              if (key.startsWith('octoclash_cache_')) {
-                localStorage.removeItem(key);
-              }
-            });
+            clearOctoClashStorage();
             window.location.reload();
           }}
           aria-label="Clear cache and reload data"
