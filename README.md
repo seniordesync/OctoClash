@@ -5,8 +5,9 @@
   <p align="center">
     <strong>Compare GitHub repositories side-by-side with beautiful charts and deep analytics.</strong>
     <br />
-    <br />
-    <a href="https://seniordesync.github.io/OctoClash"><b>✨ Open OctoClash ✨</b></a>
+    <a href="https://seniordesync.github.io/OctoClash">
+      <img src="https://img.shields.io/badge/🚀_LAUNCH_APP-FF416C?style=for-the-badge" alt="Launch OctoClash" />
+    </a>
   </p>
 </div>
 
