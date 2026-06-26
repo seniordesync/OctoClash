@@ -1,19 +1,12 @@
 <div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://upload.wikimedia.org/wikipedia/commons/c/c2/GitHub_Invertocat_Logo.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
-    <img alt="Logo" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="80" height="80">
-  </picture>
-
-  <h1 align="center">OctoClash</h1>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=FF416C,FF4B2B&height=200&section=header&text=OctoClash&fontSize=70&fontColor=ffffff&animation=fadeIn&fontAlignY=38" alt="OctoClash Header" />
+  <br><br>
 
   <p align="center">
     <strong>Compare GitHub repositories side-by-side with beautiful charts and deep analytics.</strong>
     <br />
     <br />
     <a href="https://seniordesync.github.io/OctoClash"><b>✨ Open OctoClash ✨</b></a>
-  </p>
-
   </p>
 </div>
 
@@ -37,10 +30,12 @@
 
 Built with a modern and performant stack:
 
-*   ⚛️ **[React + Vite](https://react.dev/)**
-*   🎨 **[Tailwind CSS](https://tailwindcss.com/)**
-*   🐻 **[Zustand](https://github.com/pmndrs/zustand)** 
-*   📊 **[Recharts](https://recharts.org/)**
+<div align="left">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/Zustand-4A4A55?style=for-the-badge&logo=react&logoColor=white" alt="Zustand" />
+</div>
 
 <br />
 
