@@ -207,14 +207,6 @@ export const Charts = memo(function Charts() {
     return map;
   }, [languageData]);
 
-  const pieLanguageData = useMemo(() => {
-    return languageData.map(item => ({
-      name: item.name,
-      value: item._total,
-      color: globalLangColors[item.name]
-    }));
-  }, [languageData, globalLangColors]);
-
   const detailedLanguages = useMemo(() => {
     if (!reposData) return [];
     return reposData.map(repo => {

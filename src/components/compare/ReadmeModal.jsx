@@ -12,6 +12,12 @@ DOMPurify.addHook('afterSanitizeAttributes', function (node) {
   }
 });
 
+const sanitizeReadmeHtml = (html) => DOMPurify.sanitize(html, {
+  USE_PROFILES: { html: true },
+  ADD_ATTR: ['target', 'rel'],
+  ADD_TAGS: ['picture', 'source'],
+});
+
 export function ReadmeModal() {
   const previewRepo = useAppStore(state => state.previewRepo);
   const setPreviewRepo = useAppStore(state => state.setPreviewRepo);
@@ -45,7 +51,7 @@ export function ReadmeModal() {
           setHtml(res);
           setLoading(false);
         }
-      }).catch(err => {
+      }).catch(() => {
         if (isMounted) {
           setHtml("<div class='p-4 text-center text-fg-muted'>Failed to load README or repository has no README.</div>");
           setLoading(false);
@@ -94,7 +100,7 @@ export function ReadmeModal() {
               <div className="animate-spin w-8 h-8 border-4 border-fg-accent border-t-transparent rounded-full"></div>
             </div>
           ) : (
-            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html, { USE_PROFILES: { html: true, svg: true, mathMl: true }, ADD_ATTR: ['target'], ADD_TAGS: ['picture', 'source'] }) }} />
+            <div dangerouslySetInnerHTML={{ __html: sanitizeReadmeHtml(html) }} />
           )}
         </div>
       </div>

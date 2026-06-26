@@ -133,8 +133,12 @@ function App() {
   }, [repos, fetchRepoData, addRepo]);
 
   const getErrorMessage = useCallback((err) => {
+    if (err === 'invalidRepo') return 'Use a valid repository name in owner/repo format.';
     if (err === 'notFound') return 'Repository not found.';
     if (err === 'rateLimit') return 'API Rate limit exceeded. Please add a Personal Access Token.';
+    if (err === 'forbidden') return 'GitHub rejected this request. Check repository permissions or your token.';
+    if (err === 'retryLater') return 'GitHub is still preparing these stats. Try again in a moment.';
+    if (err === 'fetchUnavailable') return 'Network requests are unavailable in this environment.';
     return err;
   }, []);
 

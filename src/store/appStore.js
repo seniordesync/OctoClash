@@ -1,7 +1,16 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { normalizeRepoFullName } from '../services/githubApi'
 
 const normalizeRepo = (repo) => repo.trim().toLowerCase();
+
+const toValidRepo = (repo) => {
+  try {
+    return normalizeRepoFullName(repo);
+  } catch {
+    return null;
+  }
+};
 
 const areReposEqual = (a, b) => {
   if (a.length !== b.length) return false;
@@ -22,10 +31,13 @@ export const useAppStore = create(
         const uniqueRepos = [];
         const seen = new Set();
         for (const r of repos) {
-          const lower = normalizeRepo(r);
+          const validRepo = toValidRepo(r);
+          if (!validRepo) continue;
+
+          const lower = normalizeRepo(validRepo);
           if (!seen.has(lower)) {
             seen.add(lower);
-            uniqueRepos.push(r.trim());
+            uniqueRepos.push(validRepo);
           }
         }
 
@@ -39,7 +51,8 @@ export const useAppStore = create(
         return { repos: uniqueRepos, reposData: sortedData };
       }),
       addRepo: (repo) => set((state) => {
-        const nextRepo = repo.trim();
+        const nextRepo = toValidRepo(repo);
+        if (!nextRepo) return state;
         if (state.repos.some(existing => normalizeRepo(existing) === normalizeRepo(nextRepo))) return state;
         return { repos: [...state.repos, nextRepo] };
       }),
@@ -70,7 +83,7 @@ export const useAppStore = create(
     }),
     {
       name: 'octoclash-storage',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => window.sessionStorage),
       partialize: (state) => ({ 
         theme: state.theme, 
         token: state.token,

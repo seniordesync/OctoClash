@@ -12,7 +12,6 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragOverlay,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -111,7 +110,7 @@ export const RepoInput = memo(function RepoInput({ onFetchRepo }) {
           setShowDropdown(true);
           setIsSearching(false);
         }
-      } catch (e) {
+      } catch {
         if (active) setIsSearching(false);
       }
     }, 500);
